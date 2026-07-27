@@ -90,7 +90,7 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 						prerender: true,
 					});
 					injectRoute({
-						pattern: routePattern(config.blog.base, "post/[...slug]"),
+						pattern: routePattern(config.blog.base, "[...slug]"),
 						entrypoint: entrypoint("./routes/BlogPost.astro"),
 						prerender: true,
 					});
@@ -109,6 +109,22 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 						});
 					}
 				}
+
+				injectRoute({
+					pattern: "/404",
+					entrypoint: entrypoint("./routes/NotFound.astro"),
+					prerender: true,
+				});
+				injectRoute({
+					pattern: "/og.png",
+					entrypoint: entrypoint("./routes/og.png.ts"),
+					prerender: true,
+				});
+				injectRoute({
+					pattern: "/robots.txt",
+					entrypoint: entrypoint("./routes/robots.txt.ts"),
+					prerender: true,
+				});
 
 				logger.info(
 					`docs ${config.docs.enabled ? "on" : "off"}, blog ${config.blog.enabled ? "on" : "off"}, search ${config.search.provider}`,

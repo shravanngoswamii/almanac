@@ -1,0 +1,114 @@
+---
+import type { GetStaticPaths, Page } from "astro";
+import { type CollectionEntry, getCollection } from "astro:content";
+import BlogCard from "../components/BlogCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig, config } from "../config";
+import { withBase } from "../lib/paths";
+import { docHref } from "../utils/sidebar";
+import { getReadingTime } from "../utils/readingTime";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	// Defined inside the callback, not as a sibling module-level const: Astro's
+	// prerender bundling for this route drops sibling top-level bindings that
+	// are only referenced from getStaticPaths, so PAGE_SIZE has to live here.
+	const PAGE_SIZE = 8;
+	const posts = (await getCollection("blog")).sort(
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	);
+	return paginate(posts, { pageSize: PAGE_SIZE });
+}) satisfies GetStaticPaths;
+
+interface Props {
+	page: Page<CollectionEntry<"blog">>;
+}
+
+const { page } = Astro.props;
+const isFirstPage = page.currentPage === 1;
+const title = isFirstPage ? "Blog" : `Blog: Page ${page.currentPage}`;
+const description = isFirstPage
+	? `Announcements, guides, and notes on building ${siteConfig.name}.`
+	: `Page ${page.currentPage} of ${page.lastPage} of announcements, guides, and notes on building ${siteConfig.name}.`;
+---
+
+<BaseLayout title={title} description={description}>
+	<section class="blog-index">
+		<header class="blog-index-header">
+			{
+				isFirstPage ? (
+					<>
+						<h1>Blog</h1>
+						<p>
+							Announcements, guides, and the thinking behind {siteConfig.name}, written the
+							same way the docs are.
+						</p>
+					</>
+				) : (
+					<h1>Blog: Page {page.currentPage}</h1>
+				)
+			}
+			<p class="blog-index-count">
+				{page.total} {page.total === 1 ? "post" : "posts"}
+			</p>
+		</header>
+		<div class="blog-list">
+			{
+				page.data.map((post, index) => (
+					<BlogCard
+						href={withBase(docHref(config.blog.base, post.id))}
+						title={post.data.title}
+						description={post.data.description}
+						pubDate={post.data.pubDate}
+						tags={post.data.tags}
+						heroImage={post.data.heroImage}
+						readingMinutes={getReadingTime(post.body ?? "").minutes}
+						featured={isFirstPage && index === 0}
+					/>
+				))
+			}
+		</div>
+		{
+			page.lastPage > 1 && (
+				<nav class="blog-pager" aria-label="Blog pagination">
+					{page.url.prev ? (
+						<a class="blog-pager-link blog-pager-prev" href={page.url.prev} rel="prev">
+							<svg aria-hidden="true" viewBox="0 0 24 24">
+								<path
+									d="M15 6l-6 6 6 6"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+							</svg>
+							<span>Previous</span>
+						</a>
+					) : (
+						<span class="blog-pager-placeholder" aria-hidden="true" />
+					)}
+					<span class="blog-pager-status">
+						Page {page.currentPage} of {page.lastPage}
+					</span>
+					{page.url.next ? (
+						<a class="blog-pager-link blog-pager-next" href={page.url.next} rel="next">
+							<span>Next</span>
+							<svg aria-hidden="true" viewBox="0 0 24 24">
+								<path
+									d="M9 6l6 6-6 6"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+							</svg>
+						</a>
+					) : (
+						<span class="blog-pager-placeholder" aria-hidden="true" />
+					)}
+				</nav>
+			)
+		}
+	</section>
+</BaseLayout>

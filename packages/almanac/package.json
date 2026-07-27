@@ -25,7 +25,10 @@
 		".": "./src/index.ts",
 		"./content": "./src/content/index.ts",
 		"./components": "./src/components/index.ts",
+		"./components/*": "./src/components/*",
+		"./layouts/*": "./src/layouts/*",
 		"./themes": "./src/themes/index.ts",
+		"./paths": "./src/lib/paths.ts",
 		"./styles/global.css": "./src/styles/global.css",
 		"./package.json": "./package.json"
 	},
@@ -41,7 +44,8 @@
 	},
 	"dependencies": {
 		"@resvg/resvg-js": "^2.6.2",
-		"satori": "^0.26.0"
+		"satori": "^0.26.0",
+		"@astrojs/rss": "^4.0.19"
 	},
 	"devDependencies": {
 		"astro": "^7.1.3",
