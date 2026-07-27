@@ -37,6 +37,7 @@ export default defineConfig({
 							"guides/search",
 							"guides/theming",
 							"guides/terminal-demos",
+							"guides/executable-code",
 						],
 					},
 					{
@@ -48,6 +49,7 @@ export default defineConfig({
 			blog: { enabled: true, path: "blog", base: "blog" },
 			theme: { default: "almanac-light" },
 			search: { provider: "pagefind" },
+			future: { execute: true },
 		}),
 	],
 });
