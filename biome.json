@@ -1,8 +1,17 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.5.5/schema.json",
-	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
 	"files": {
-		"includes": ["**", "!**/dist", "!**/.astro", "!**/node_modules"]
+		"includes": [
+			"**",
+			"!**/dist",
+			"!**/.astro",
+			"!**/node_modules"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -10,14 +19,20 @@
 	},
 	"linter": {
 		"enabled": true,
-		"rules": { "recommended": true }
+		"rules": {
+			"preset": "recommended"
+		}
 	},
 	"javascript": {
-		"formatter": { "quoteStyle": "double" }
+		"formatter": {
+			"quoteStyle": "double"
+		}
 	},
 	"overrides": [
 		{
-			"includes": ["**/*.astro"],
+			"includes": [
+				"**/*.astro"
+			],
 			"linter": {
 				"rules": {
 					"correctness": {
@@ -28,11 +43,17 @@
 			}
 		},
 		{
-			"includes": ["**/*.css"],
+			"includes": [
+				"**/*.css"
+			],
 			"linter": {
 				"rules": {
-					"complexity": { "noImportantStyles": "off" },
-					"style": { "noDescendingSpecificity": "off" }
+					"complexity": {
+						"noImportantStyles": "off"
+					},
+					"style": {
+						"noDescendingSpecificity": "off"
+					}
 				}
 			}
 		}

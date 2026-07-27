@@ -1,4 +1,4 @@
-import { ExecCache, type ExecOutput } from "./cache.ts";
+import type { ExecCache, ExecOutput } from "./cache.ts";
 import type { CacheKeyInput } from "./key.ts";
 import {
 	isNodeLanguage,
@@ -7,8 +7,8 @@ import {
 	runNode,
 } from "./runners/node.ts";
 
-export { ExecCache, type ExecArtifact, type ExecOutput } from "./cache.ts";
-export { CACHE_VERSION, cacheKey, type CacheKeyInput } from "./key.ts";
+export { type ExecArtifact, ExecCache, type ExecOutput } from "./cache.ts";
+export { CACHE_VERSION, type CacheKeyInput, cacheKey } from "./key.ts";
 export { isNodeLanguage, nodeEngineId, runNode } from "./runners/node.ts";
 
 export interface ExecuteRequest {
