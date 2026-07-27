@@ -213,5 +213,7 @@ export function buildSidebar(
 }
 
 export function flattenNav(groups: NavGroup[]): NavItem[] {
-	return groups.flatMap((group) => group.items).filter((item) => !item.external);
+	return groups
+		.flatMap((group) => group.items)
+		.filter((item) => !item.external);
 }

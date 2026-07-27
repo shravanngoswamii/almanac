@@ -48,16 +48,18 @@ function themesModule(ctx: VirtualModuleContext): string {
 	const css = buildThemesCss(themes);
 	// The picker only needs presentational fields, so the token maps are
 	// dropped here rather than shipped to the client twice.
-	const forPicker = themes.map(({ id, family, name, mode, swatch, bg, surface, text }) => ({
-		id,
-		family,
-		name,
-		mode,
-		swatch,
-		bg,
-		surface,
-		text,
-	}));
+	const forPicker = themes.map(
+		({ id, family, name, mode, swatch, bg, surface, text }) => ({
+			id,
+			family,
+			name,
+			mode,
+			swatch,
+			bg,
+			surface,
+			text,
+		}),
+	);
 	return [
 		`export const themes = ${serialize(forPicker)};`,
 		`export const themesCss = ${JSON.stringify(css)};`,

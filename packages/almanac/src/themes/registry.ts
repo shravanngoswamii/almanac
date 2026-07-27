@@ -120,11 +120,13 @@ export function buildTokens(seed: Seed): Record<string, string> {
 	};
 }
 
-const NEUTRAL_SEED: Record<Mode, { bg: string; surface: string; text: string }> =
-	{
-		light: { bg: "#f8fafc", surface: "#ffffff", text: "#0f172a" },
-		dark: { bg: "#0f172a", surface: "#1e293b", text: "#f1f5f9" },
-	};
+const NEUTRAL_SEED: Record<
+	Mode,
+	{ bg: string; surface: string; text: string }
+> = {
+	light: { bg: "#f8fafc", surface: "#ffffff", text: "#0f172a" },
+	dark: { bg: "#0f172a", surface: "#1e293b", text: "#f1f5f9" },
+};
 
 interface Family {
 	id: string;
@@ -176,22 +178,166 @@ interface Signature extends Seed {
 
 /** Every signature family must exist in both modes. */
 const SIGNATURES: Signature[] = [
-	{ id: "sepia-light", family: "sepia", name: "Sepia", mode: "light", bg: "#f7eed7", surface: "#fcf6e6", text: "#4a3f30", accent: "#9c6a35" },
-	{ id: "sepia-dark", family: "sepia", name: "Sepia Dark", mode: "dark", bg: "#251e15", surface: "#33291c", text: "#ead9bd", accent: "#cf9a5e" },
-	{ id: "solarized-light", family: "solarized", name: "Solarized Light", mode: "light", bg: "#fdf6e3", surface: "#eee8d5", text: "#586e75", accent: "#268bd2" },
-	{ id: "solarized-dark", family: "solarized", name: "Solarized Dark", mode: "dark", bg: "#002b36", surface: "#073642", text: "#93a1a1", accent: "#268bd2" },
-	{ id: "gruvbox-light", family: "gruvbox", name: "Gruvbox Light", mode: "light", bg: "#fbf1c7", surface: "#f4e8be", text: "#3c3836", accent: "#b57614" },
-	{ id: "gruvbox-dark", family: "gruvbox", name: "Gruvbox Dark", mode: "dark", bg: "#282828", surface: "#3c3836", text: "#ebdbb2", accent: "#fabd2f" },
-	{ id: "dracula-light", family: "dracula", name: "Dracula Light", mode: "light", bg: "#fffbeb", surface: "#f7f1dc", text: "#1f1f1f", accent: "#644ac9" },
-	{ id: "dracula-dark", family: "dracula", name: "Dracula", mode: "dark", bg: "#282a36", surface: "#343746", text: "#f8f8f2", accent: "#bd93f9" },
-	{ id: "nord-light", family: "nord", name: "Nord Light", mode: "light", bg: "#eceff4", surface: "#e5e9f0", text: "#2e3440", accent: "#5e81ac" },
-	{ id: "nord-dark", family: "nord", name: "Nord", mode: "dark", bg: "#2e3440", surface: "#3b4252", text: "#eceff4", accent: "#88c0d0" },
-	{ id: "onedark-light", family: "onedark", name: "One Light", mode: "light", bg: "#fafafa", surface: "#eaeaeb", text: "#383a42", accent: "#4078f2" },
-	{ id: "onedark-dark", family: "onedark", name: "One Dark", mode: "dark", bg: "#282c34", surface: "#31363f", text: "#abb2bf", accent: "#61afef" },
-	{ id: "tokyonight-light", family: "tokyonight", name: "Tokyo Night Light", mode: "light", bg: "#e1e2e7", surface: "#d5d6db", text: "#33395b", accent: "#2e7de9" },
-	{ id: "tokyonight-dark", family: "tokyonight", name: "Tokyo Night", mode: "dark", bg: "#1a1b26", surface: "#24283b", text: "#c0caf5", accent: "#7aa2f7" },
-	{ id: "catppuccin-light", family: "catppuccin", name: "Catppuccin Latte", mode: "light", bg: "#eff1f5", surface: "#e6e9ef", text: "#4c4f69", accent: "#8839ef" },
-	{ id: "catppuccin-dark", family: "catppuccin", name: "Catppuccin", mode: "dark", bg: "#1e1e2e", surface: "#313244", text: "#cdd6f4", accent: "#cba6f7" },
+	{
+		id: "sepia-light",
+		family: "sepia",
+		name: "Sepia",
+		mode: "light",
+		bg: "#f7eed7",
+		surface: "#fcf6e6",
+		text: "#4a3f30",
+		accent: "#9c6a35",
+	},
+	{
+		id: "sepia-dark",
+		family: "sepia",
+		name: "Sepia Dark",
+		mode: "dark",
+		bg: "#251e15",
+		surface: "#33291c",
+		text: "#ead9bd",
+		accent: "#cf9a5e",
+	},
+	{
+		id: "solarized-light",
+		family: "solarized",
+		name: "Solarized Light",
+		mode: "light",
+		bg: "#fdf6e3",
+		surface: "#eee8d5",
+		text: "#586e75",
+		accent: "#268bd2",
+	},
+	{
+		id: "solarized-dark",
+		family: "solarized",
+		name: "Solarized Dark",
+		mode: "dark",
+		bg: "#002b36",
+		surface: "#073642",
+		text: "#93a1a1",
+		accent: "#268bd2",
+	},
+	{
+		id: "gruvbox-light",
+		family: "gruvbox",
+		name: "Gruvbox Light",
+		mode: "light",
+		bg: "#fbf1c7",
+		surface: "#f4e8be",
+		text: "#3c3836",
+		accent: "#b57614",
+	},
+	{
+		id: "gruvbox-dark",
+		family: "gruvbox",
+		name: "Gruvbox Dark",
+		mode: "dark",
+		bg: "#282828",
+		surface: "#3c3836",
+		text: "#ebdbb2",
+		accent: "#fabd2f",
+	},
+	{
+		id: "dracula-light",
+		family: "dracula",
+		name: "Dracula Light",
+		mode: "light",
+		bg: "#fffbeb",
+		surface: "#f7f1dc",
+		text: "#1f1f1f",
+		accent: "#644ac9",
+	},
+	{
+		id: "dracula-dark",
+		family: "dracula",
+		name: "Dracula",
+		mode: "dark",
+		bg: "#282a36",
+		surface: "#343746",
+		text: "#f8f8f2",
+		accent: "#bd93f9",
+	},
+	{
+		id: "nord-light",
+		family: "nord",
+		name: "Nord Light",
+		mode: "light",
+		bg: "#eceff4",
+		surface: "#e5e9f0",
+		text: "#2e3440",
+		accent: "#5e81ac",
+	},
+	{
+		id: "nord-dark",
+		family: "nord",
+		name: "Nord",
+		mode: "dark",
+		bg: "#2e3440",
+		surface: "#3b4252",
+		text: "#eceff4",
+		accent: "#88c0d0",
+	},
+	{
+		id: "onedark-light",
+		family: "onedark",
+		name: "One Light",
+		mode: "light",
+		bg: "#fafafa",
+		surface: "#eaeaeb",
+		text: "#383a42",
+		accent: "#4078f2",
+	},
+	{
+		id: "onedark-dark",
+		family: "onedark",
+		name: "One Dark",
+		mode: "dark",
+		bg: "#282c34",
+		surface: "#31363f",
+		text: "#abb2bf",
+		accent: "#61afef",
+	},
+	{
+		id: "tokyonight-light",
+		family: "tokyonight",
+		name: "Tokyo Night Light",
+		mode: "light",
+		bg: "#e1e2e7",
+		surface: "#d5d6db",
+		text: "#33395b",
+		accent: "#2e7de9",
+	},
+	{
+		id: "tokyonight-dark",
+		family: "tokyonight",
+		name: "Tokyo Night",
+		mode: "dark",
+		bg: "#1a1b26",
+		surface: "#24283b",
+		text: "#c0caf5",
+		accent: "#7aa2f7",
+	},
+	{
+		id: "catppuccin-light",
+		family: "catppuccin",
+		name: "Catppuccin Latte",
+		mode: "light",
+		bg: "#eff1f5",
+		surface: "#e6e9ef",
+		text: "#4c4f69",
+		accent: "#8839ef",
+	},
+	{
+		id: "catppuccin-dark",
+		family: "catppuccin",
+		name: "Catppuccin",
+		mode: "dark",
+		bg: "#1e1e2e",
+		surface: "#313244",
+		text: "#cdd6f4",
+		accent: "#cba6f7",
+	},
 ];
 
 function signatureTheme(s: Signature): Theme {
@@ -212,8 +358,18 @@ function signatureTheme(s: Signature): Theme {
 function almanacTheme(mode: Mode): Theme {
 	const seed =
 		mode === "dark"
-			? { bg: "#101413", surface: "#171d1a", text: "#f4f1ea", accent: "#6ee7b7" }
-			: { bg: "#fbfaf7", surface: "#ffffff", text: "#151816", accent: "#14724b" };
+			? {
+					bg: "#101413",
+					surface: "#171d1a",
+					text: "#f4f1ea",
+					accent: "#6ee7b7",
+				}
+			: {
+					bg: "#fbfaf7",
+					surface: "#ffffff",
+					text: "#151816",
+					accent: "#14724b",
+				};
 	return {
 		id: `almanac-${mode}`,
 		family: "almanac",
@@ -266,7 +422,9 @@ export function oppositeMode(id: string): string {
 export function selectThemes(include: "all" | string[]): Theme[] {
 	if (include === "all") return THEMES;
 	const wanted = new Set(include);
-	return THEMES.filter((t) => t.family === "almanac" || wanted.has(t.id) || wanted.has(t.family));
+	return THEMES.filter(
+		(t) => t.family === "almanac" || wanted.has(t.id) || wanted.has(t.family),
+	);
 }
 
 /**

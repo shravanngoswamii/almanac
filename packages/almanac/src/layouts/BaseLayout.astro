@@ -64,7 +64,8 @@ const navGroups = buildSidebar(docsEntries, {
 	sidebar: config.docs.sidebar,
 });
 const quickLinks = flattenNav(navGroups);
-const getStartedHref = quickLinks[0]?.href ?? docHref(config.docs.base, "index");
+const getStartedHref =
+	quickLinks[0]?.href ?? docHref(config.docs.base, "index");
 const blogHref = docHref(config.blog.base, "index");
 const docsHref = docHref(config.docs.base, "index");
 ---

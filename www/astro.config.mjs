@@ -26,7 +26,10 @@ export default defineConfig({
 				path: "docs",
 				base: "docs",
 				sidebar: [
-					{ label: "Get started", items: ["index", "start/installation", "start/quick-start"] },
+					{
+						label: "Get started",
+						items: ["index", "start/installation", "start/quick-start"],
+					},
 					{
 						label: "Guides",
 						items: [
@@ -36,7 +39,10 @@ export default defineConfig({
 							"guides/terminal-demos",
 						],
 					},
-					{ label: "Reference", items: ["reference/configuration", "reference/deployment"] },
+					{
+						label: "Reference",
+						items: ["reference/configuration", "reference/deployment"],
+					},
 				],
 			},
 			blog: { enabled: true, path: "blog", base: "blog" },
