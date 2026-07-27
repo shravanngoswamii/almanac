@@ -11,31 +11,31 @@ const className = Astro.props.class ?? "logo-mark";
 
 <svg class={className} viewBox={logoMark.viewBox} role="img" aria-label={siteConfig.name}>
 	<path
-		d={logoMark.spine}
+		d={logoMark.leftLeg}
 		fill="none"
 		stroke="currentColor"
 		stroke-width={logoMark.strokeWidth}
 		stroke-linecap="round"
 	/>
 	<path
-		d={logoMark.topArm}
+		d={logoMark.rightLeg}
 		fill="none"
 		stroke="currentColor"
 		stroke-width={logoMark.strokeWidth}
 		stroke-linecap="round"
 	/>
 	<path
-		d={logoMark.middleArm}
+		d={logoMark.crossbar}
 		fill="none"
 		stroke="currentColor"
 		stroke-width={logoMark.strokeWidth}
 		stroke-linecap="round"
 	/>
 	<path
-		d={logoMark.bend}
+		d={logoMark.arc}
 		fill="none"
 		stroke="var(--logo-accent)"
-		stroke-width={logoMark.strokeWidth}
+		stroke-width={logoMark.arcStrokeWidth}
 		stroke-linecap="round"
 	/>
 	<circle cx={logoMark.dot.cx} cy={logoMark.dot.cy} r={logoMark.dot.r} fill="var(--logo-warn)" />

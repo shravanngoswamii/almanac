@@ -3,10 +3,10 @@ import { logoMark } from "../assets/logoMark";
 import { siteConfig } from "../config";
 
 const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${logoMark.viewBox}">
-  <path d="${logoMark.spine}" fill="none" stroke="#f5f4f0" stroke-width="${logoMark.strokeWidth}" stroke-linecap="round"/>
-  <path d="${logoMark.topArm}" fill="none" stroke="#f5f4f0" stroke-width="${logoMark.strokeWidth}" stroke-linecap="round"/>
-  <path d="${logoMark.middleArm}" fill="none" stroke="#f5f4f0" stroke-width="${logoMark.strokeWidth}" stroke-linecap="round"/>
-  <path d="${logoMark.bend}" fill="none" stroke="#6ee7b7" stroke-width="${logoMark.strokeWidth}" stroke-linecap="round"/>
+  <path d="${logoMark.leftLeg}" fill="none" stroke="#f5f4f0" stroke-width="${logoMark.strokeWidth}" stroke-linecap="round"/>
+  <path d="${logoMark.rightLeg}" fill="none" stroke="#f5f4f0" stroke-width="${logoMark.strokeWidth}" stroke-linecap="round"/>
+  <path d="${logoMark.crossbar}" fill="none" stroke="#f5f4f0" stroke-width="${logoMark.strokeWidth}" stroke-linecap="round"/>
+  <path d="${logoMark.arc}" fill="none" stroke="#6ee7b7" stroke-width="${logoMark.arcStrokeWidth}" stroke-linecap="round"/>
   <circle cx="${logoMark.dot.cx}" cy="${logoMark.dot.cy}" r="${logoMark.dot.r}" fill="#eab308"/>
 </svg>`;
 
