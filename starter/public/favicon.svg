@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Flect">
+  <style>
+    .main { stroke: #101413; }
+    @media (prefers-color-scheme: dark) {
+      .main { stroke: #f4f1ea; }
+    }
+  </style>
+  <path class="main" d="M40 106 L40 26" fill="none" stroke-width="13" stroke-linecap="round"/>
+  <path class="main" d="M40 26 L76 26" fill="none" stroke-width="13" stroke-linecap="round"/>
+  <path class="main" d="M40 62 L70 62" fill="none" stroke-width="13" stroke-linecap="round"/>
+  <path d="M76 26 Q98 26 98 48" fill="none" stroke="#14724b" stroke-width="13" stroke-linecap="round"/>
+  <circle cx="98" cy="48" r="7" fill="#eab308"/>
+</svg>

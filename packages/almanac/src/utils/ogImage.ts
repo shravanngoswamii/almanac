@@ -1,4 +1,3 @@
-import { Resvg } from "@resvg/resvg-js";
 import satori, { type Font } from "satori";
 import { logoMark } from "../assets/logoMark";
 import { siteConfig } from "../config";
@@ -180,6 +179,9 @@ export async function generateOgImage(
 		},
 	);
 
+	// Imported lazily: a static import makes the bundler try to resolve the
+	// native .node binary, which it cannot read.
+	const { Resvg } = await import("@resvg/resvg-js");
 	const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } });
 	return new Uint8Array(resvg.render().asPng());
 }
