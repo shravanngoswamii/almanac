@@ -1,4 +1,4 @@
-import { almanac } from "./integration.js";
+import { almanac } from "./integration.ts";
 
 export default almanac;
 export { almanac };
@@ -9,7 +9,7 @@ export {
 	type AlmanacUserConfig,
 	type SidebarItem,
 	validateConfig,
-} from "./config/schema.js";
+} from "./config/schema.ts";
 
 export {
 	buildThemesCss,
@@ -22,9 +22,9 @@ export {
 	selectThemes,
 	type Theme,
 	THEMES,
-} from "./themes/registry.js";
+} from "./themes/registry.ts";
 
 export {
 	OVERRIDABLE,
 	type OverridableComponent,
-} from "./vite/virtual-modules.js";
+} from "./vite/virtual-modules.ts";

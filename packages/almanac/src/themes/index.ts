@@ -10,4 +10,4 @@ export {
 	selectThemes,
 	type Theme,
 	THEMES,
-} from "./registry.js";
+} from "./registry.ts";

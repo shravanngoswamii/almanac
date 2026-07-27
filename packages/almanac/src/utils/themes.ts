@@ -1,1 +1,1 @@
-export * from "../themes/registry.js";
+export * from "../themes/registry.ts";

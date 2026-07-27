@@ -1,6 +1,6 @@
 import type { Plugin as VitePlugin } from "vite";
-import type { AlmanacConfig } from "../config/schema.js";
-import { buildThemesCss, selectThemes } from "../themes/registry.js";
+import type { AlmanacConfig } from "../config/schema.ts";
+import { buildThemesCss, selectThemes } from "../themes/registry.ts";
 
 /**
  * Component names the framework renders through the override map. A site can

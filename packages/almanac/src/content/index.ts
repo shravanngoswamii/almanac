@@ -1,7 +1,7 @@
-export { blogLoader, docsLoader, type LoaderOptions } from "./loaders.js";
+export { blogLoader, docsLoader, type LoaderOptions } from "./loaders.ts";
 export {
 	blogSchema,
 	type DocsFrontmatter,
 	docsSchema,
 	type SchemaContext,
-} from "./schemas.js";
+} from "./schemas.ts";

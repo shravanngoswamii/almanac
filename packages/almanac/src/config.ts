@@ -1,5 +1,5 @@
 import config from "virtual:almanac/config";
-import { getTheme, modeOf, oppositeMode } from "./themes/registry.js";
+import { getTheme, modeOf, oppositeMode } from "./themes/registry.ts";
 
 /**
  * Presentational view of the validated config, in the shape the layouts and

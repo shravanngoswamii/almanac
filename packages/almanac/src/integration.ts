@@ -1,9 +1,9 @@
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import type { AstroIntegration } from "astro";
-import type { AlmanacConfig, AlmanacUserConfig } from "./config/schema.js";
-import { validateConfig } from "./config/schema.js";
-import { almanacVitePlugin } from "./vite/virtual-modules.js";
+import type { AlmanacConfig, AlmanacUserConfig } from "./config/schema.ts";
+import { validateConfig } from "./config/schema.ts";
+import { almanacVitePlugin } from "./vite/virtual-modules.ts";
 
 const PACKAGE_NAME = "almanac";
 

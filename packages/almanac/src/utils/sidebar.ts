@@ -1,4 +1,4 @@
-import type { SidebarItem } from "../config/schema.js";
+import type { SidebarItem } from "../config/schema.ts";
 
 export interface NavItem {
 	title: string;

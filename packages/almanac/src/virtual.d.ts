@@ -1,11 +1,11 @@
 declare module "virtual:almanac/config" {
-	import type { AlmanacConfig } from "./config/schema.js";
+	import type { AlmanacConfig } from "./config/schema.ts";
 	export const config: AlmanacConfig;
 	export default config;
 }
 
 declare module "virtual:almanac/themes" {
-	import type { Mode } from "./themes/registry.js";
+	import type { Mode } from "./themes/registry.ts";
 	export interface PickerTheme {
 		id: string;
 		family: string;
