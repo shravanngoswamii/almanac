@@ -1,0 +1,208 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PromptCast from "../components/PromptCast.astro";
+import { withBase } from "../lib/paths";
+import { siteConfig } from "../config";
+
+const siteOrigin = Astro.site ?? Astro.url;
+const appUrl = new URL(withBase("/"), siteOrigin).href;
+const installUrl = new URL(withBase("/docs/start/installation/"), siteOrigin)
+	.href;
+const deployUrl = new URL(withBase("/docs/reference/deployment/"), siteOrigin)
+	.href;
+
+const structuredData = [
+	{
+		"@context": "https://schema.org",
+		"@type": "SoftwareSourceCode",
+		name: siteConfig.name,
+		description: siteConfig.description,
+		url: appUrl,
+		codeRepository: "https://github.com/shravanngoswamii/flect",
+		programmingLanguage: "Astro",
+		author: {
+			"@type": "Person",
+			name: "Shravan Goswami",
+		},
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "FAQPage",
+		mainEntity: [
+			{
+				"@type": "Question",
+				name: "What is Flect?",
+				acceptedAnswer: {
+					"@type": "Answer",
+					text: siteConfig.description,
+				},
+			},
+			{
+				"@type": "Question",
+				name: "Do I need Starlight or another docs framework?",
+				acceptedAnswer: {
+					"@type": "Answer",
+					text: "No. Flect has no dependency on Starlight or any other docs framework. Every component is plain Astro that you fully own.",
+				},
+			},
+			{
+				"@type": "Question",
+				name: "Can I remove the terminal-cast player?",
+				acceptedAnswer: {
+					"@type": "Answer",
+					text: "Yes. The terminal-cast player is entirely optional. Remove the component and its recording if your docs don't need it.",
+				},
+			},
+			{
+				"@type": "Question",
+				name: "How do I deploy it?",
+				acceptedAnswer: {
+					"@type": "Answer",
+					text: `Flect ships with a GitHub Pages deployment workflow already wired up. See ${deployUrl} for details.`,
+				},
+			},
+		],
+	},
+];
+---
+
+<BaseLayout
+	title={siteConfig.name}
+	description={siteConfig.description}
+	structuredData={structuredData}
+>
+	<section class="hero">
+		<h1>Documentation that looks handcrafted, not templated.</h1>
+		<div class="actions">
+			<a class="button" href={withBase('/docs/start/installation/')}>Get started</a>
+			<a class="button secondary" href={withBase('/docs/')}>Read the docs</a>
+		</div>
+		<div class="hero-demo">
+			<div class="terminal-chrome">
+				<span class="chrome-dots">
+					<span></span><span></span><span></span>
+				</span>
+				<span class="chrome-title">flect · quick start</span>
+			</div>
+			<PromptCast />
+		</div>
+		<p class="hero-copy">
+			<code>Flect</code> is a hand-built Astro documentation template with sidebar
+			navigation, instant search, and dark mode, plus an optional terminal-cast
+			player for showing real command output inside your guides. It has no
+			dependency on Starlight or any other docs framework. Every component here
+			is plain Astro, and it's yours to read, edit, and own outright.
+		</p>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>No framework, no lock-in.</h2>
+			<p>
+				<code>Flect</code> is a set of plain Astro components and pages you can read
+				end-to-end, not a plugin system to configure around.
+			</p>
+		</div>
+		<div class="search-joke">
+			<div class="search-joke-bar">
+				<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="m20 20-4.35-4.35m2.35-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+				</svg>
+				<span class="search-joke-query">plugin system<span class="search-joke-caret" aria-hidden="true"></span></span>
+			</div>
+			<div class="search-joke-results">
+				<p class="search-joke-headline">No results found.</p>
+				<p class="search-joke-sub">
+					There isn't one. Every page here is plain Astro you can read end to
+					end.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>Start in one command.</h2>
+			<p>Clone the template, install dependencies, and the dev server is running.</p>
+		</div>
+		<div class="install-strip">
+			<div>
+				<strong>Clone and run</strong>
+				<span>No CLI to install first, no scaffolding step, just a repository you clone and run.</span>
+			</div>
+			<pre><code>git clone https://github.com/shravanngoswamii/flect.git
+cd flect
+npm install
+npm run dev</code></pre>
+			<a class="button secondary" href={withBase('/docs/start/installation/')}>Installation guide</a>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>Documentation.</h2>
+			<p>Focused pages for getting started, writing content, theming, and deployment.</p>
+		</div>
+		<div class="docs-grid">
+			<a class="doc-link" href={withBase('/docs/start/quick-start/')}>
+				<h3>Quick start</h3>
+				<p>Go from a fresh clone to a customized docs site running locally.</p>
+			</a>
+			<a class="doc-link" href={withBase('/docs/guides/writing-docs/')}>
+				<h3>Writing docs</h3>
+				<p>Add Markdown pages, frontmatter, and navigation entries that Flect picks up automatically.</p>
+			</a>
+			<a class="doc-link" href={withBase('/docs/reference/deployment/')}>
+				<h3>Deployment</h3>
+				<p>Ship your docs with the included GitHub Pages workflow and pull request previews.</p>
+			</a>
+		</div>
+	</section>
+
+	<section class="section attribution-section">
+		<p class="attribution">
+			Flect's design and component set started as the documentation site for <a href="https://github.com/shravanngoswamii/gitflect" target="_blank">gitflect</a>, a Rust CLI by the same author, and grew into a standalone, reusable template.
+		</p>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>FAQ</h2>
+			<p>Quick answers for search engines and humans.</p>
+		</div>
+		<div class="faq-list">
+			<details class="faq-item">
+				<summary>What is Flect?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>A hand-built Astro documentation template with search, theming, and sidebar navigation ready to use out of the box.</p>
+			</details>
+			<details class="faq-item">
+				<summary>Do I need Starlight or another docs framework?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>No. Flect has no dependency on Starlight or any other docs framework. It's plain Astro components and pages.</p>
+			</details>
+			<details class="faq-item">
+				<summary>Can I remove the terminal-cast player?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>Yes. It's entirely optional. Delete the component and its recording if you don't need it.</p>
+			</details>
+			<details class="faq-item">
+				<summary>How do I deploy it?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>A GitHub Pages workflow is included, so pushing to main builds and deploys the site automatically.</p>
+			</details>
+		</div>
+	</section>
+</BaseLayout>

@@ -1,0 +1,23 @@
+<button type="button" class="back-to-top" data-back-to-top aria-label="Back to top" data-pagefind-ignore>
+	<svg aria-hidden="true" viewBox="0 0 24 24">
+		<path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+	</svg>
+</button>
+
+<script>
+	const button = document.querySelector<HTMLButtonElement>("[data-back-to-top]");
+
+	if (button) {
+		const threshold = 400;
+		const update = () => {
+			button.classList.toggle("is-visible", window.scrollY > threshold);
+		};
+
+		window.addEventListener("scroll", update, { passive: true });
+		update();
+
+		button.addEventListener("click", () => {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		});
+	}
+</script>

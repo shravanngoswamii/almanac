@@ -1,0 +1,69 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { siteConfig } from "../../../config";
+import { withBase } from "../../../lib/paths";
+import { slugifyTag } from "../../../utils/slug";
+
+const posts = await getCollection("blog");
+
+const counts = new Map<
+	string,
+	{ slug: string; label: string; count: number }
+>();
+for (const post of posts) {
+	for (const tag of post.data.tags ?? []) {
+		const slug = slugifyTag(tag);
+		const existing = counts.get(slug);
+		if (existing) {
+			existing.count += 1;
+		} else {
+			counts.set(slug, { slug, label: tag, count: 1 });
+		}
+	}
+}
+
+const tags = Array.from(counts.values()).sort((a, b) =>
+	a.label.localeCompare(b.label),
+);
+---
+
+<BaseLayout title="Tags" description={`Browse every tag used across the ${siteConfig.name} blog.`}>
+	<section class="blog-index">
+		<header class="blog-index-header">
+			<h1>Tags</h1>
+			<p>Browse {siteConfig.name} posts by topic.</p>
+		</header>
+		{
+			tags.length > 0 ? (
+				<ul class="tag-index-list">
+					{tags.map((tag) => (
+						<li>
+							<a class="tag-index-link" href={withBase(`/blog/tags/${tag.slug}/`)}>
+								<span class="tag-index-name">{tag.label}</span>
+								<span class="tag-index-count">
+									{tag.count} {tag.count === 1 ? "post" : "posts"}
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			) : (
+				<p>No tags yet.</p>
+			)
+		}
+		<a class="blog-back" href={withBase("/blog/")}>
+			<svg aria-hidden="true" viewBox="0 0 24 24">
+				<path
+					d="M15 18l-6-6 6-6"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+			</svg>
+			Back to blog
+		</a>
+	</section>
+</BaseLayout>
