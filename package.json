@@ -9,7 +9,7 @@
 	"scripts": {
 		"dev": "pnpm --filter www dev",
 		"build": "pnpm --filter www build",
-		"typecheck": "pnpm -r typecheck",
+		"typecheck": "pnpm -r --filter \"./packages/*\" typecheck",
 		"lint": "biome lint .",
 		"format": "biome format --write .",
 		"format:check": "biome format .",

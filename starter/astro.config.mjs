@@ -13,9 +13,7 @@ export default defineConfig({
 			},
 			// Omit `sidebar` and Almanac groups pages by directory instead.
 			docs: {
-				sidebar: [
-					{ label: "Get started", items: ["index", "guides/writing"] },
-				],
+				sidebar: [{ label: "Get started", items: ["index", "guides/writing"] }],
 			},
 		}),
 	],

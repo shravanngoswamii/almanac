@@ -40,6 +40,15 @@ importers:
         specifier: ^7.0.0
         version: 7.3.6(@types/node@25.9.5)(lightningcss@1.33.0)
 
+  packages/create-almanac:
+    devDependencies:
+      '@types/node':
+        specifier: ^25.6.2
+        version: 25.9.5
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
   starter:
     dependencies:
       almanac:

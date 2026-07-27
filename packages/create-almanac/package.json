@@ -1,0 +1,39 @@
+{
+	"name": "create-almanac",
+	"version": "0.0.0",
+	"type": "module",
+	"description": "Scaffold an Almanac documentation site.",
+	"license": "MIT",
+	"author": "Shravan Goswami <contact@shravangoswami.com>",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/shravanngoswamii/almanac.git",
+		"directory": "packages/create-almanac"
+	},
+	"keywords": [
+		"almanac",
+		"astro",
+		"documentation",
+		"scaffold",
+		"create"
+	],
+	"bin": {
+		"create-almanac": "./dist/index.js"
+	},
+	"files": [
+		"dist",
+		"template"
+	],
+	"engines": {
+		"node": ">=22.12.0"
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc --noEmit",
+		"prepack": "node ./scripts/sync-template.mjs && pnpm build"
+	},
+	"devDependencies": {
+		"@types/node": "^25.6.2",
+		"typescript": "^6.0.3"
+	}
+}
