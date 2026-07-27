@@ -10,3 +10,6 @@ dist/
 
 # Execution results are reproducible from source; sites may commit theirs.
 .almanac/
+
+# Internal planning notes, kept local
+PLAN.md
