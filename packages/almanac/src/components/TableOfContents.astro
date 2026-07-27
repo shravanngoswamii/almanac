@@ -1,4 +1,8 @@
 ---
+import { config } from "../config";
+
+const tocConfig = config.docs.toc;
+
 interface Heading {
 	depth: number;
 	slug: string;
@@ -7,10 +11,14 @@ interface Heading {
 
 interface Props {
 	headings?: Heading[];
+	minDepth?: number;
+	maxDepth?: number;
 }
 
+const minDepth = Astro.props.minDepth ?? tocConfig.minDepth;
+const maxDepth = Astro.props.maxDepth ?? tocConfig.maxDepth;
 const headings = (Astro.props.headings ?? []).filter(
-	(heading) => heading.depth >= 2 && heading.depth <= 3,
+	(heading) => heading.depth >= minDepth && heading.depth <= maxDepth,
 );
 ---
 
@@ -20,7 +28,7 @@ const headings = (Astro.props.headings ?? []).filter(
 			<h2>On this page</h2>
 			<ul>
 				{headings.map((heading) => (
-					<li class:list={{ nested: heading.depth === 3 }}>
+					<li class:list={{ nested: heading.depth > minDepth }}>
 						<a href={`#${heading.slug}`}>{heading.text}</a>
 					</li>
 				))}

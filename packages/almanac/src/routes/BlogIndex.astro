@@ -11,8 +11,9 @@ import { getReadingTime } from "../utils/readingTime";
 export const getStaticPaths = (async ({ paginate }) => {
 	// Defined inside the callback, not as a sibling module-level const: Astro's
 	// prerender bundling for this route drops sibling top-level bindings that
-	// are only referenced from getStaticPaths, so PAGE_SIZE has to live here.
-	const PAGE_SIZE = 8;
+	// are only referenced from getStaticPaths, so this has to be read here.
+	const { config: almanacConfig } = await import("../config");
+	const PAGE_SIZE = almanacConfig.blog.postsPerPage;
 	const posts = (await getCollection("blog")).sort(
 		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 	);

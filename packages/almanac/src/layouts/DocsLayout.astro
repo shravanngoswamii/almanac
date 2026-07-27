@@ -119,6 +119,7 @@ const nextItem =
 			<div class="prose">
 				<slot />
 			</div>
+			{config.docs.pager && (
 			<nav class="docs-pager" aria-label="Docs pagination">
 				{prevItem ? (
 					<a class="docs-pager-link docs-pager-prev" href={withBase(prevItem.href)}>
@@ -143,6 +144,7 @@ const nextItem =
 					<span class="docs-pager-placeholder" />
 				)}
 			</nav>
+			)}
 		</article>
 		<TableOfContents headings={headings} />
 	</div>

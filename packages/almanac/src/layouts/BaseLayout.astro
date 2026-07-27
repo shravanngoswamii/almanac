@@ -68,6 +68,24 @@ const getStartedHref =
 	quickLinks[0]?.href ?? docHref(config.docs.base, "index");
 const blogHref = docHref(config.blog.base, "index");
 const docsHref = docHref(config.docs.base, "index");
+
+const renderHeadTag = (tag: {
+	tag: string;
+	attrs: Record<string, string | boolean>;
+	content: string;
+}) => {
+	const attrs = Object.entries(tag.attrs)
+		.filter(([, value]) => value !== false)
+		.map(([key, value]) =>
+			value === true
+				? key
+				: `${key}="${String(value).replace(/"/g, "&quot;")}"`,
+		)
+		.join(" ");
+	const open = attrs ? `<${tag.tag} ${attrs}>` : `<${tag.tag}>`;
+	const voidTags = new Set(["link", "meta", "base"]);
+	return voidTags.has(tag.tag) ? open : `${open}${tag.content}</${tag.tag}>`;
+};
 ---
 
 <!doctype html>
@@ -98,6 +116,10 @@ const docsHref = docHref(config.docs.base, "index");
 			<script defer src={siteConfig.umami.src} data-website-id={siteConfig.umami.websiteId}></script>
 		)}
 		{jsonLdItems.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)}></script>)}
+		{config.theme.customCss.map((href) => <link rel="stylesheet" href={href} />)}
+		{config.head.map((tag) => (
+			<Fragment set:html={renderHeadTag(tag)} />
+		))}
 		<title>{pageTitle}</title>
 		<style set:html={themesCss}></style>
 		<script is:inline>
