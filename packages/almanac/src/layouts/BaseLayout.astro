@@ -103,7 +103,7 @@ const docsHref = docHref(config.docs.base, "index");
 		<script is:inline>
 			(() => {
 				const key = 'theme';
-				const legacyMap = { light: 'flect-light', dark: 'flect-dark' };
+				const legacyMap = { light: 'almanac-light', dark: 'almanac-dark' };
 				let stored = localStorage.getItem(key);
 				if (stored && legacyMap[stored]) {
 					stored = legacyMap[stored];
@@ -111,7 +111,7 @@ const docsHref = docHref(config.docs.base, "index");
 				}
 				const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 				const isSystem = !stored || stored === 'system';
-				const resolved = isSystem ? (systemDark ? 'flect-dark' : 'flect-light') : stored;
+				const resolved = isSystem ? (systemDark ? 'almanac-dark' : 'almanac-light') : stored;
 				const mode = resolved.endsWith('-dark') ? 'dark' : 'light';
 				const root = document.documentElement;
 				root.dataset.mode = mode;
@@ -304,7 +304,7 @@ const docsHref = docHref(config.docs.base, "index");
 				const effective = () => {
 					const s = readStored();
 					if (!s || s === 'system') {
-						return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'flect-dark' : 'flect-light';
+						return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'almanac-dark' : 'almanac-light';
 					}
 					return s;
 				};
@@ -330,13 +330,13 @@ const docsHref = docHref(config.docs.base, "index");
 				function toggleQuick() {
 					if (isSystem()) {
 						const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-						persist(dark ? 'flect-light' : 'flect-dark');
+						persist(dark ? 'almanac-light' : 'almanac-dark');
 						return;
 					}
 					const current = effective();
 					const other = modeOf(current) === 'dark' ? 'light' : 'dark';
 					const sibling = `${familyOf(current)}-${other}`;
-					persist(siblingExists(sibling) ? sibling : `flect-${other}`);
+					persist(siblingExists(sibling) ? sibling : `almanac-${other}`);
 				}
 
 				function renderActiveStates() {
@@ -391,9 +391,9 @@ const docsHref = docHref(config.docs.base, "index");
 							return;
 						}
 						const current = effective();
-						const family = isSystem() ? 'flect' : familyOf(current);
+						const family = isSystem() ? 'almanac' : familyOf(current);
 						const id = `${family}-${seg}`;
-						persist(siblingExists(id) ? id : `flect-${seg}`);
+						persist(siblingExists(id) ? id : `almanac-${seg}`);
 					});
 				});
 				popover.querySelectorAll('.theme-tile').forEach((tile) => {

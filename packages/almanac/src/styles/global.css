@@ -848,9 +848,9 @@ pre {
 	border-radius: 8px;
 }
 
-.asciinema-player-theme-flect,
-.asciinema-player-theme-flect .ap-player,
-.ap-player.asciinema-player-theme-flect {
+.asciinema-player-theme-almanac,
+.asciinema-player-theme-almanac .ap-player,
+.ap-player.asciinema-player-theme-almanac {
 	--term-color-foreground: var(--code-text);
 	--term-color-background: var(--code-bg);
 	--term-color-0: #24292e;
@@ -871,9 +871,9 @@ pre {
 	--term-color-15: #d1d5da;
 }
 
-:root[data-mode="dark"] .asciinema-player-theme-flect,
-:root[data-mode="dark"] .asciinema-player-theme-flect .ap-player,
-:root[data-mode="dark"] .ap-player.asciinema-player-theme-flect {
+:root[data-mode="dark"] .asciinema-player-theme-almanac,
+:root[data-mode="dark"] .asciinema-player-theme-almanac .ap-player,
+:root[data-mode="dark"] .ap-player.asciinema-player-theme-almanac {
 	--term-color-0: #484f58;
 	--term-color-1: #ff7b72;
 	--term-color-2: #3fb950;
