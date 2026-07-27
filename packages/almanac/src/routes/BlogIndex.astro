@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths, Page } from "astro";
 import { type CollectionEntry, getCollection } from "astro:content";
-import BlogCard from "../components/BlogCard.astro";
+import { BlogCard } from "virtual:almanac/components";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { siteConfig, config } from "../config";
 import { withBase } from "../lib/paths";

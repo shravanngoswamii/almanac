@@ -23,15 +23,14 @@ declare module "virtual:almanac/themes" {
 }
 
 declare module "virtual:almanac/components" {
-	type AstroComponent = (...args: never[]) => unknown;
-	export const Header: AstroComponent;
-	export const Footer: AstroComponent;
-	export const Sidebar: AstroComponent;
-	export const TableOfContents: AstroComponent;
-	export const Pager: AstroComponent;
-	export const Search: AstroComponent;
-	export const ThemePicker: AstroComponent;
-	export const Logo: AstroComponent;
+	// Astro components are opaque here: the .astro types are not visible to tsc,
+	// and every consumer only ever renders them.
+	type AstroComponent = (props: Record<string, unknown>) => unknown;
+	export const BackToTop: AstroComponent;
 	export const BlogCard: AstroComponent;
-	export const PageTitle: AstroComponent;
+	export const Logo: AstroComponent;
+	export const PromptCast: AstroComponent;
+	export const Search: AstroComponent;
+	export const ShareLinks: AstroComponent;
+	export const TableOfContents: AstroComponent;
 }

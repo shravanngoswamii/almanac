@@ -2,9 +2,11 @@
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
-import TableOfContents from "../components/TableOfContents.astro";
-import ShareLinks from "../components/ShareLinks.astro";
-import BackToTop from "../components/BackToTop.astro";
+import {
+	BackToTop,
+	ShareLinks,
+	TableOfContents,
+} from "virtual:almanac/components";
 import { withBase } from "../lib/paths";
 import { config } from "../config";
 import { docHref } from "../utils/sidebar";

@@ -7,16 +7,13 @@ import { buildThemesCss, selectThemes } from "../themes/registry.ts";
  * replace any of them by pointing `components` at its own .astro file.
  */
 export const OVERRIDABLE = [
-	"Header",
-	"Footer",
-	"Sidebar",
-	"TableOfContents",
-	"Pager",
-	"Search",
-	"ThemePicker",
-	"Logo",
+	"BackToTop",
 	"BlogCard",
-	"PageTitle",
+	"Logo",
+	"PromptCast",
+	"Search",
+	"ShareLinks",
+	"TableOfContents",
 ] as const;
 
 export type OverridableComponent = (typeof OVERRIDABLE)[number];
@@ -79,7 +76,9 @@ function componentsModule(ctx: VirtualModuleContext): string {
 		const override = overrides[name];
 		const target = override
 			? JSON.stringify(resolveOverride(override, ctx.root))
-			: JSON.stringify(`${ctx.packageSrc}/components/${name}.astro`);
+			: JSON.stringify(
+					`${ctx.packageSrc.replace(/\/$/, "")}/components/${name}.astro`,
+				);
 		return `export { default as ${name} } from ${target};`;
 	});
 	return `${lines.join("\n")}\n`;
