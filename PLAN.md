@@ -1,6 +1,7 @@
 # Almanac: full plan and handoff document
 
-**Status:** M1 complete. Repo live at github.com/shravanngoswamii/almanac, CI green.
+**Status:** M1 complete. M2 working for JavaScript and TypeScript. Repo live at
+github.com/shravanngoswamii/almanac, CI green.
 **Last updated:** 2026-07-27
 **Purpose:** This is the complete context for the Almanac project. It exists so the working conversation can be compacted without losing decisions, research, or rationale. Read this first before continuing any work.
 
@@ -295,14 +296,39 @@ Astro integration, Zod config, docs and blog collections, theme system, componen
 - [x] `create-almanac` CLI with template sync, package rename, and package-manager detection
 - [x] 46 unit tests, CI running lint, format, typecheck, test, and both site builds
 
-**Known gaps carried into M2:** www docs content still needs to describe Almanac
-rather than Flect. Blog posts are still flect-era. `docs.toc` depths,
-`docs.lastUpdated`, `docs.pager`, `theme.customCss`, `head`, `editUrl`, and
-`onBrokenLinks` are accepted and validated by the schema but not yet consumed by
-the renderer.
+**Gaps closed after M1:** www docs now describe Almanac. `docs.pager`,
+`docs.toc.minDepth/maxDepth`, `blog.postsPerPage`, `head`, and
+`theme.customCss` are wired and verified by flipping each value and asserting the
+output changed.
 
-### M2: execution (the wedge)
-JS and TS fenced code blocks execute at build time, output embedded. Durable cache keyed on code + language + deps + engine version. mcmcjs as the flagship demo.
+**Gaps still open:** blog posts are still flect-era prose. Component overrides
+are built into `virtual:almanac/components` but no layout consumes that module
+yet, and six names in `OVERRIDABLE` have no built-in file. Still validated but
+inert: `logo`, `favicon` (the layout hardcodes `/favicon.svg`), `editUrl`,
+`docs.lastUpdated`, `blog.readingTime`, `onBrokenLinks`, `onBrokenAnchors`, and
+the frontmatter fields `template`, `tableOfContents`, `prev`, `next`,
+`lastUpdated`, `head`. OG images are one site-wide image rather than per page.
+
+### M2: execution (WORKING for JS and TS)
+- [x] `exec/key.ts`: content-addressed cache key over code, language, engine, dependencies, and options, with a canonical stringify so key order never matters
+- [x] `exec/cache.ts`: durable file-backed cache, sharded by key prefix, self-validating against collisions
+- [x] `exec/runners/node.ts`: subprocess runner with timeout kill, stdout and stderr capture, and TypeScript via type stripping
+- [x] `exec/remark.ts`: remark transformer for ` ```js exec `, with `hide-code`, `hide-output`, and `timeout=` directives
+- [x] Wired behind `future.execute`, reported after the build as ran/reused/failed
+- [x] A failing block renders its error in place instead of failing the build
+- [x] 28 unit tests covering keys, cache, runner, and orchestration
+
+**Learned the hard way:** Astro 7 defaults to the Satteri Markdown processor,
+which does not run remark plugins at all. Executing code requires
+`markdown.processor: unified({...})` from `@astrojs/markdown-remark`, resolved
+from the consuming project rather than this package, because Astro identifies
+the processor with `isUnifiedProcessor` and only recognises instances from the
+copy Astro itself loaded. This matters for M3: MyST also needs that pipeline.
+
+**Remaining for M2:** Pyodide, WebR, and Jupyter kernels (M5 in practice),
+declared dependency resolution so a block can import a package, and artifacts
+beyond text (the `ExecArtifact` type exists for figures but no runner emits
+one). mcmcjs is not yet wired up as the flagship demo.
 
 ### M3: MyST AST
 Adopt `myst-parser` and `myst-transforms`. Cross-references, citations, numbering. This is where `future.myst` flips on. The web renderer must already consume a normalized document object by this point.
