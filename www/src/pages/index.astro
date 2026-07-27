@@ -1,24 +1,192 @@
 ---
+import { Code } from "astro:components";
 import { getCollection } from "astro:content";
 import BaseLayout from "almanac/layouts/BaseLayout.astro";
+import PromptCast from "almanac/components/PromptCast.astro";
+import { ExecCache, execute } from "almanac/exec";
+import { THEMES } from "almanac/themes";
 import { withBase } from "almanac/paths";
 
 const docs = await getCollection("docs");
-const docCount = docs.length;
+const posts = await getCollection("blog");
+
+// Run for real, through the same engine that powers `exec` blocks in Markdown,
+// so the number below is computed while this page is built rather than typed.
+const DEMO = `const sunrise = (dayOfYear, latitude) => {
+	const decl = -23.44 * Math.cos(((2 * Math.PI) / 365) * (dayOfYear + 10));
+	const rad = Math.PI / 180;
+	const cosH = -Math.tan(latitude * rad) * Math.tan(decl * rad);
+	return 12 - Math.acos(cosH) / rad / 15;
+};
+
+console.log(sunrise(180, 51.48).toFixed(2), "hours after midnight, London");`;
+
+const cache = new ExecCache(`${process.cwd()}/.almanac/exec`);
+const demo = await execute({ code: DEMO, language: "js" }, cache);
+
+const structuredData = {
+	"@context": "https://schema.org",
+	"@type": "SoftwareSourceCode",
+	name: "Almanac",
+	description:
+		"A publishing framework for technical and scientific writing: docs, blog, and executable content from one source.",
+	codeRepository: "https://github.com/shravanngoswamii/almanac",
+	programmingLanguage: "TypeScript",
+	author: { "@type": "Person", name: "Shravan Goswami" },
+};
 ---
 
-<BaseLayout title="Almanac" description="A publishing framework for technical and scientific writing.">
+<BaseLayout
+	title="Almanac"
+	description="A publishing framework for technical and scientific writing. Docs, blog, and executable content from one source."
+	structuredData={structuredData}
+>
 	<section class="hero">
-		<h1>One source. Docs, blog, and executed output.</h1>
+		<h1>Documentation that runs its own examples.</h1>
 		<div class="actions">
-			<a class="button" href={withBase('/docs/')}>Read the docs</a>
-			<a class="button secondary" href={withBase('/blog/')}>Blog</a>
+			<a class="button" href={withBase('/docs/start/installation/')}>Get started</a>
+			<a class="button secondary" href={withBase('/docs/')}>Read the docs</a>
+		</div>
+		<div class="hero-demo">
+			<div class="terminal-chrome">
+				<span class="chrome-dots">
+					<span></span><span></span><span></span>
+				</span>
+				<span class="chrome-title">almanac · quick start</span>
+			</div>
+			<PromptCast />
 		</div>
 		<p class="hero-copy">
 			<code>Almanac</code> is a publishing framework for technical and scientific
-			writing. It renders {docCount} documentation pages, a blog, and 40+ themes
-			from this repository, and it is built so the same content can reach print
-			without a second source of truth.
+			writing. It gives you documentation, a blog, search, and {THEMES.length} themes
+			from one directory of Markdown, and it can run your code during the build so
+			the output on the page is the real thing.
 		</p>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>Your examples cannot go stale.</h2>
+			<p>
+				Mark a fenced block with <code>exec</code> and Almanac runs it while the
+				site builds. The output below was computed a moment ago, not pasted in.
+			</p>
+		</div>
+		<div class="exec-showcase">
+			<Code
+				code={DEMO}
+				lang="js"
+				themes={{ light: "github-light", dark: "github-dark" }}
+				defaultColor={false}
+			/>
+			<figure class="exec-result" data-exec-state="ok">
+				<figcaption class="exec-caption">
+					<span>Output</span>
+					<span class="exec-meta">{demo.cached ? 'cached' : `${demo.durationMs}ms`}</span>
+				</figcaption>
+				<pre class="exec-stream exec-stdout"><code>{demo.stdout}</code></pre>
+			</figure>
+		</div>
+		<p class="exec-showcase-note">
+			An almanac has always been a book of computed tables. This one computes them
+			at build time, keys the cache on the code, the language, and the runtime
+			version, and never runs an unchanged block twice.
+		</p>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>Start in one command.</h2>
+			<p>Scaffold a site, write Markdown, and the routes exist.</p>
+		</div>
+		<div class="install-strip">
+			<div>
+				<strong>Scaffold and run</strong>
+				<span>You own two things: the config file and your content. The framework handles the rest.</span>
+			</div>
+			<pre><code>npm create almanac@latest my-docs
+cd my-docs
+npm run dev</code></pre>
+			<a class="button secondary" href={withBase('/docs/start/installation/')}>Installation guide</a>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>Documentation.</h2>
+			<p>{docs.length} pages covering configuration, writing, theming, search, and deployment.</p>
+		</div>
+		<div class="docs-grid">
+			<a class="doc-link" href={withBase('/docs/start/quick-start/')}>
+				<h3>Quick start</h3>
+				<p>Go from an empty directory to a running documentation site.</p>
+			</a>
+			<a class="doc-link" href={withBase('/docs/guides/executable-code/')}>
+				<h3>Executable code</h3>
+				<p>Run JavaScript and TypeScript blocks at build time and embed their output.</p>
+			</a>
+			<a class="doc-link" href={withBase('/docs/reference/configuration/')}>
+				<h3>Configuration</h3>
+				<p>Every option, its default, and what is still on the roadmap.</p>
+			</a>
+		</div>
+	</section>
+
+	<section class="section attribution-section">
+		<p class="attribution">
+			Almanac grew out of <a href="https://github.com/shravanngoswamii/flect" target="_blank">Flect</a>,
+			an Astro documentation template by the same author, and inherited its design
+			system. <a href={withBase('/blog/from-template-to-framework/')}>That story is on the blog</a>,
+			along with {posts.length - 1} other posts.
+		</p>
+	</section>
+
+	<section class="section">
+		<div class="section-header">
+			<h2>FAQ</h2>
+			<p>Including the parts that are not built yet.</p>
+		</div>
+		<div class="faq-list">
+			<details class="faq-item">
+				<summary>What is Almanac?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>An Astro integration that turns a directory of Markdown into a documentation site with a sidebar, search, a blog, {THEMES.length} themes, and code blocks that execute during the build.</p>
+			</details>
+			<details class="faq-item">
+				<summary>Which languages can it execute?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>JavaScript and TypeScript today, each in its own process with a timeout. Python through Pyodide, R through WebR, and real Jupyter kernels are planned. A language without a runner renders as an ordinary highlighted block rather than an error.</p>
+			</details>
+			<details class="faq-item">
+				<summary>Can it produce a PDF?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>Not yet, and it would be dishonest to imply otherwise. Multi-format output needs a real document AST first, which is the next milestone. The plan is MyST for the AST and Typst for print.</p>
+			</details>
+			<details class="faq-item">
+				<summary>How does it compare to Starlight or Docusaurus?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>Both are more mature and better supported, and neither executes code. If you want a docs site backed by a team, use them. Almanac exists for technical and scientific writing where the output of your code belongs on the page.</p>
+			</details>
+			<details class="faq-item">
+				<summary>Is it ready for my project?
+					<svg class="faq-icon" aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</summary>
+				<p>It builds this site, so it works. It is also pre-1.0 with one maintainer, no docs versioning, and no i18n. Treat it as early software that is honest about being early.</p>
+			</details>
+		</div>
 	</section>
 </BaseLayout>
