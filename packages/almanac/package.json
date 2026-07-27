@@ -30,7 +30,8 @@
 		"./themes": "./src/themes/index.ts",
 		"./paths": "./src/lib/paths.ts",
 		"./styles/global.css": "./src/styles/global.css",
-		"./package.json": "./package.json"
+		"./package.json": "./package.json",
+		"./exec": "./src/exec/index.ts"
 	},
 	"files": [
 		"src"
@@ -42,7 +43,9 @@
 		"astro": "^7.0.0",
 		"@resvg/resvg-js": "^2.6.2",
 		"satori": "^0.26.0",
-		"pagefind": "^1.5.0"
+		"pagefind": "^1.5.0",
+		"asciinema-player": "^3.15.1",
+		"@astrojs/markdown-remark": "^7.0.0"
 	},
 	"dependencies": {
 		"@astrojs/rss": "^4.0.19"
@@ -52,7 +55,8 @@
 		"vite": "^7.0.0",
 		"@types/node": "^25.6.2",
 		"@resvg/resvg-js": "^2.6.2",
-		"satori": "^0.26.0"
+		"satori": "^0.26.0",
+		"asciinema-player": "^3.15.1"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
@@ -60,6 +64,12 @@
 	},
 	"peerDependenciesMeta": {
 		"pagefind": {
+			"optional": true
+		},
+		"asciinema-player": {
+			"optional": true
+		},
+		"@astrojs/markdown-remark": {
 			"optional": true
 		}
 	}
