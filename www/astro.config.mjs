@@ -21,7 +21,24 @@ export default defineConfig({
 				github: "https://github.com/shravanngoswamii/almanac",
 				sponsor: "https://github.com/sponsors/shravanngoswamii",
 			},
-			docs: { enabled: true, path: "docs", base: "docs" },
+			docs: {
+				enabled: true,
+				path: "docs",
+				base: "docs",
+				sidebar: [
+					{ label: "Get started", items: ["index", "start/installation", "start/quick-start"] },
+					{
+						label: "Guides",
+						items: [
+							"guides/writing-docs",
+							"guides/search",
+							"guides/theming",
+							"guides/terminal-demos",
+						],
+					},
+					{ label: "Reference", items: ["reference/configuration", "reference/deployment"] },
+				],
+			},
 			blog: { enabled: true, path: "blog", base: "blog" },
 			theme: { default: "almanac-light" },
 			search: { provider: "pagefind" },
