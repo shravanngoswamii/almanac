@@ -414,7 +414,13 @@ const docsHref = docHref(config.docs.base, "index");
 			(() => {
 				const blocks = document.querySelectorAll('main pre');
 				for (const pre of blocks) {
-					if (pre.closest('.prompt-player') || pre.parentElement?.classList.contains('code-frame')) {
+					// Execution output already has its own caption bar, and the
+					// terminal player is not copyable text.
+					if (
+						pre.closest('.prompt-player') ||
+						pre.closest('.exec-result') ||
+						pre.parentElement?.classList.contains('code-frame')
+					) {
 						continue;
 					}
 

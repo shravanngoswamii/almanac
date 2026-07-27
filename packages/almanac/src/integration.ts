@@ -1,8 +1,11 @@
 import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import type { AstroIntegration } from "astro";
 import type { AlmanacConfig, AlmanacUserConfig } from "./config/schema.ts";
 import { validateConfig } from "./config/schema.ts";
+import { remarkExec } from "./exec/remark.ts";
 import { almanacVitePlugin } from "./vite/virtual-modules.ts";
 
 const PACKAGE_NAME = "almanac";
@@ -39,20 +42,69 @@ async function runPagefind(outDir: string): Promise<void> {
 	});
 }
 
+/**
+ * Astro 7 defaults to the Satteri Markdown processor, which does not run remark
+ * plugins. Executing code needs the unified pipeline, so it is loaded on demand
+ * and only when the feature is switched on.
+ */
+async function unifiedProcessorWith(plugin: unknown, root: string) {
+	// Resolved against the consuming project rather than this package, for two
+	// reasons: pnpm will not let a package reach a dependency it did not
+	// declare, and Astro checks the processor with isUnifiedProcessor, which
+	// only recognises instances from the copy Astro itself loaded.
+	const require = createRequire(path.join(root, "package.json"));
+	let specifier: string;
+	try {
+		specifier = pathToFileURL(require.resolve("@astrojs/markdown-remark")).href;
+	} catch {
+		throw new Error(
+			"[almanac] `future.execute` needs the unified Markdown processor, because Astro's default Satteri processor does not run remark plugins. Install it in your project:\n  npm install @astrojs/markdown-remark",
+		);
+	}
+	const { unified } = (await import(specifier)) as {
+		unified: (opts: { remarkPlugins: unknown[] }) => unknown;
+	};
+	return unified({ remarkPlugins: [plugin] });
+}
+
 export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 	const result = validateConfig(userConfig);
 	if (!result.ok) reportInvalidConfig(result.issues);
 	const config: AlmanacConfig = result.config;
 
+	// Tallied across the whole build so the summary reports real numbers.
+	const execStats = { ran: 0, cached: 0, failed: 0 };
+
 	return {
 		name: PACKAGE_NAME,
 		hooks: {
-			"astro:config:setup": ({
+			"astro:config:setup": async ({
 				config: astroConfig,
 				updateConfig,
 				injectRoute,
 				logger,
 			}) => {
+				const root = fileURLToPath(astroConfig.root);
+				const processor = config.future.execute
+					? await unifiedProcessorWith(
+							// Tuple form: unified calls the factory with these options to
+							// get the transformer. Passing the transformer itself would
+							// have unified invoke it with no tree.
+							[
+								remarkExec,
+								{
+									root,
+									onResult: (info: { cached: boolean; error?: string }) => {
+										if (info.error) execStats.failed += 1;
+										else if (info.cached) execStats.cached += 1;
+										else execStats.ran += 1;
+									},
+								},
+							],
+							root,
+						)
+					: undefined;
+
 				updateConfig({
 					vite: {
 						plugins: [
@@ -72,6 +124,7 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 							defaultColor: false,
 							wrap: false,
 						},
+						...(processor ? { processor } : {}),
 					},
 				});
 
@@ -132,6 +185,12 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 			},
 
 			"astro:build:done": async ({ dir, logger }) => {
+				if (config.future.execute) {
+					const { ran, cached, failed } = execStats;
+					logger.info(
+						`executed ${ran} block${ran === 1 ? "" : "s"}, reused ${cached} from cache${failed ? `, ${failed} failed` : ""}`,
+					);
+				}
 				if (config.search.provider !== "pagefind") return;
 				const outDir = fileURLToPath(dir);
 				logger.info("building the search index");

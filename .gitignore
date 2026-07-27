@@ -7,3 +7,6 @@ dist/
 .env.*
 !.env.example
 .DS_Store
+
+# Execution results are reproducible from source; sites may commit theirs.
+.almanac/

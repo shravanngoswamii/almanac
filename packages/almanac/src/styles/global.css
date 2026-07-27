@@ -2652,3 +2652,71 @@ pre {
 		bottom: 5rem;
 	}
 }
+
+.exec-result {
+	margin: 0.35rem 0 1.6rem;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: var(--surface-muted);
+	overflow: hidden;
+}
+
+.exec-caption {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.4rem 0.85rem;
+	border-bottom: 1px solid var(--line);
+	color: var(--muted);
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+}
+
+.exec-meta {
+	font-weight: 600;
+	text-transform: none;
+	letter-spacing: 0;
+	opacity: 0.75;
+}
+
+.exec-result[data-exec-state="error"] {
+	border-color: color-mix(in srgb, var(--amber) 45%, var(--line));
+}
+
+.exec-result .exec-stream,
+.prose .exec-result .exec-stream {
+	margin: 0;
+	padding: 0.85rem;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--code-text);
+	font-size: 0.85rem;
+	line-height: 1.6;
+	overflow-x: auto;
+	white-space: pre-wrap;
+}
+
+.exec-stderr {
+	color: var(--amber);
+}
+
+.exec-error {
+	margin: 0;
+	padding: 0.7rem 0.85rem;
+	border-top: 1px solid var(--line);
+	color: var(--amber);
+	font-size: 0.85rem;
+}
+
+.exec-empty {
+	margin: 0;
+	padding: 0.85rem;
+	color: var(--muted);
+	font-size: 0.85rem;
+}
