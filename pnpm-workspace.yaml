@@ -1,0 +1,9 @@
+packages:
+  - packages/*
+  - starter
+  - www
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  "@resvg/resvg-js": true
