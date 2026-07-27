@@ -1,21 +1,31 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
 import TableOfContents from "../components/TableOfContents.astro";
-import { siteConfig } from "../config";
-import { navGroups, quickLinks } from "../data/navigation";
+import { siteConfig, config } from "../config";
+import { buildSidebar, docHref, flattenNav } from "../utils/sidebar";
 import { withBase } from "../lib/paths";
 
 const { frontmatter, headings } = Astro.props;
 const title = frontmatter.title ?? "Docs";
 const description =
 	frontmatter.description ?? `${siteConfig.name} documentation.`;
+
+const docsEntries = await getCollection("docs");
+const navGroups = buildSidebar(docsEntries, {
+	base: config.docs.base,
+	sidebar: config.docs.sidebar,
+});
+const quickLinks = flattenNav(navGroups);
+const docsRoot = docHref(config.docs.base, "index");
+
 const basePath =
 	import.meta.env.BASE_URL === "/"
 		? ""
 		: import.meta.env.BASE_URL.replace(/\/$/, "");
 const currentPath =
 	Astro.url.pathname.replace(basePath, "").replace(/\/$/, "") || "/";
-const docsRootUrl = new URL(withBase("/docs/"), Astro.site ?? Astro.url).href;
+const docsRootUrl = new URL(withBase(docsRoot), Astro.site ?? Astro.url).href;
 const breadcrumbItems = [
 	{
 		"@type": "ListItem",
@@ -25,7 +35,7 @@ const breadcrumbItems = [
 	},
 ];
 
-if (currentPath !== "/docs") {
+if (currentPath !== docsRoot.replace(/\/$/, "")) {
 	breadcrumbItems.push({
 		"@type": "ListItem",
 		position: 2,
@@ -56,7 +66,7 @@ const nextItem =
 <BaseLayout title={title} description={description} bodyClass="docs-page" structuredData={structuredData}>
 	<div class="docs-shell">
 		<aside class="docs-sidebar" aria-label="Documentation navigation" data-pagefind-ignore>
-			<a class="docs-home" href={withBase('/docs/')}>Documentation</a>
+			<a class="docs-home" href={withBase(docsRoot)}>Documentation</a>
 			{
 				navGroups.map((group) => (
 					<section>

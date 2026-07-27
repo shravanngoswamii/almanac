@@ -6,6 +6,8 @@ import TableOfContents from "../components/TableOfContents.astro";
 import ShareLinks from "../components/ShareLinks.astro";
 import BackToTop from "../components/BackToTop.astro";
 import { withBase } from "../lib/paths";
+import { config } from "../config";
+import { docHref } from "../utils/sidebar";
 import { slugifyTag } from "../utils/slug";
 import type { ReadingTime } from "../utils/readingTime";
 
@@ -70,7 +72,7 @@ const hasToc = tocHeadings.length > 0;
 
 <BaseLayout title={title} description={description} bodyClass="blog-page" ogType="article">
 	<article class="blog-post">
-		<a class="blog-back" href={withBase("/blog/")}>
+		<a class="blog-back" href={withBase(docHref(config.blog.base, "index"))}>
 			<svg aria-hidden="true" viewBox="0 0 24 24">
 				<path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 			</svg>

@@ -1,13 +1,14 @@
 ---
+import { getCollection } from "astro:content";
 import "../styles/global.css";
-import { siteConfig } from "../config";
-import { navGroups, quickLinks } from "../data/navigation";
+import { siteConfig, config } from "../config";
+import { buildSidebar, docHref, flattenNav } from "../utils/sidebar";
 import Logo from "../components/Logo.astro";
 import Search from "../components/Search.astro";
 import GitHubIcon from "../components/icons/GitHubIcon.astro";
 import HeartIcon from "../components/icons/HeartIcon.astro";
 import { withBase } from "../lib/paths";
-import { THEMES, buildThemesCss } from "../utils/themes";
+import { selectThemes, buildThemesCss } from "../utils/themes";
 
 interface Props {
 	title?: string;
@@ -52,9 +53,20 @@ const extraStructuredData = Array.isArray(structuredData)
 		? [structuredData]
 		: [];
 const jsonLdItems = [defaultStructuredData, ...extraStructuredData];
-const themesCss = buildThemesCss();
-const lightThemes = THEMES.filter((t) => t.mode === "light");
-const darkThemes = THEMES.filter((t) => t.mode === "dark");
+const availableThemes = selectThemes(config.theme.include);
+const themesCss = buildThemesCss(availableThemes);
+const lightThemes = availableThemes.filter((t) => t.mode === "light");
+const darkThemes = availableThemes.filter((t) => t.mode === "dark");
+
+const docsEntries = config.docs.enabled ? await getCollection("docs") : [];
+const navGroups = buildSidebar(docsEntries, {
+	base: config.docs.base,
+	sidebar: config.docs.sidebar,
+});
+const quickLinks = flattenNav(navGroups);
+const getStartedHref = quickLinks[0]?.href ?? docHref(config.docs.base, "index");
+const blogHref = docHref(config.blog.base, "index");
+const docsHref = docHref(config.docs.base, "index");
 ---
 
 <!doctype html>
@@ -114,9 +126,9 @@ const darkThemes = THEMES.filter((t) => t.mode === "dark");
 			</a>
 			<Search />
 			<nav class="top-nav" aria-label="Main navigation">
-				<a href={withBase('/docs/')}>Docs</a>
-				<a href={withBase('/blog/')}>Blog</a>
-				<a href={withBase(navGroups[0].items[0].href)}>Get Started</a>
+				{config.docs.enabled && <a href={withBase(docsHref)}>Docs</a>}
+				{config.blog.enabled && <a href={withBase(blogHref)}>Blog</a>}
+				<a href={withBase(getStartedHref)}>Get Started</a>
 				{githubSponsorsUrl && (
 					<a class="nav-heart" href={githubSponsorsUrl} target="_blank">
 						<HeartIcon />
@@ -218,9 +230,9 @@ const darkThemes = THEMES.filter((t) => t.mode === "dark");
 							</svg>
 						</button>
 					</div>
-					<a href={withBase('/docs/')}>Docs</a>
-					<a href={withBase('/blog/')}>Blog</a>
-					<a href={withBase(navGroups[0].items[0].href)}>Get Started</a>
+					{config.docs.enabled && <a href={withBase(docsHref)}>Docs</a>}
+					{config.blog.enabled && <a href={withBase(blogHref)}>Blog</a>}
+					<a href={withBase(getStartedHref)}>Get Started</a>
 					<a href={siteConfig.githubUrl} target="_blank">
 						<GitHubIcon />
 						GitHub
@@ -250,7 +262,7 @@ const darkThemes = THEMES.filter((t) => t.mode === "dark");
 					{quickLinks.slice(0, 4).map((link) => <a href={withBase(link.href)}>{link.title}</a>)}
 				</nav>
 				<div class="footer-actions">
-					<a href={withBase('/blog/')}>Blog</a>
+					{config.blog.enabled && <a href={withBase(blogHref)}>Blog</a>}
 					{githubSponsorsUrl && (
 						<a class="nav-heart" href={githubSponsorsUrl} target="_blank">
 							<HeartIcon />
