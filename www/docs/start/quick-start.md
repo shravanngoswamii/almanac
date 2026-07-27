@@ -1,35 +1,74 @@
 ---
 title: Quick start
-description: The short list of things to edit to make the template your own.
+description: The short list of things to change once Almanac is installed.
 ---
 
-Once the template is [installed](../installation/) and running, here's the order to work through to turn it into your own site.
+Once Almanac is [installed](../installation/) and the dev server runs, here's the order to work through to turn the starting point into your own site. Almost all of it happens in `astro.config.mjs`.
 
-## 1. Update `src/config.ts`
+## 1. Set the site identity
 
-This is the central config object (`siteConfig`). Set your site's name, tagline, description, GitHub URL, GitHub Sponsors URL, theme colors, and (if you use it) your Umami website id. See the [Configuration reference](../../reference/configuration/) for every field.
+The integration's options drive the header, the meta tags, the footer, and the OG image:
 
-## 2. Update `src/data/navigation.ts`
+```js
+almanac({
+	title: "My Project",
+	tagline: "Short line under the title.",
+	description: "Used for meta tags and the OG image.",
+	author: { name: "You", url: "https://example.com" },
+	social: {
+		github: "https://github.com/you/your-project",
+		sponsor: "https://github.com/sponsors/you",
+	},
+})
+```
 
-This file defines the sidebar's groups and links. Add, remove, or reorder entries here to shape the docs navigation. See [Writing docs](../../guides/writing-docs/) for how new pages and nav entries need to stay in sync.
+Every field is listed in the [Configuration reference](../../reference/configuration/).
 
-## 3. Replace the branding assets
+## 2. Shape the sidebar
 
-Swap in your own:
+Either describe the navigation explicitly:
 
-- `public/logo-light.svg`
-- `public/logo-dark.svg`
-- `public/favicon.svg`
+```js
+docs: {
+	sidebar: [
+		{ label: "Get started", items: ["index", "start/installation"] },
+		{ autogenerate: { directory: "reference" } },
+	],
+}
+```
 
-## 4. Rewrite the homepage
+Or delete `sidebar` entirely and let Almanac group pages by their top-level directory. See [Writing docs](../../guides/writing-docs/) for how both modes resolve.
 
-Edit `src/pages/index.astro` with your own hero copy, features, and calls to action.
+## 3. Pick a theme
 
-## 5. Add your first real page
+`theme.default` is the theme a first-time visitor sees, and `theme.include` narrows what the picker offers:
 
-Create a new `.md` file under `docs/`, give it the right frontmatter, and add a matching entry to `src/data/navigation.ts` so it shows up in the sidebar. The [Writing docs](../../guides/writing-docs/) guide covers the frontmatter shape and routing rules in detail.
+```js
+theme: { default: "almanac-light", include: ["dracula", "nord"] }
+```
+
+All 42 built-in ids are listed in [Theming](../../guides/theming/).
+
+## 4. Decide whether you want a blog
+
+The blog is off by default, because a docs site without one is the common case:
+
+```js
+blog: { enabled: true, tags: true, rss: true }
+```
+
+With it on, posts live in a top-level `blog/` directory and the blog index, tag pages, and `/rss.xml` are all injected for you.
+
+## 5. Replace the favicon
+
+The layout serves `/favicon.svg`, so drop your own file at `public/favicon.svg`. The header and footer logo is a built-in mark, not a file you supply.
+
+## 6. Write your first real page
+
+Create a `.md` file under `docs/`, give it a `title` in its frontmatter, and the route exists. If you configured an explicit `sidebar`, add the page's id to it too, otherwise the page is reachable by URL but invisible in the navigation.
 
 ## Next steps
 
-- [Writing docs](../../guides/writing-docs/) explains how routing, frontmatter, and callouts work.
-- [Configuration reference](../../reference/configuration/) documents every `siteConfig` field and the `navigation.ts` shape.
+- [Writing docs](../../guides/writing-docs/) covers routing, frontmatter, callouts, and sidebars.
+- [Configuration reference](../../reference/configuration/) documents every option and its default.
+- [Deployment](../../reference/deployment/) covers `site`, `base`, and static hosting.

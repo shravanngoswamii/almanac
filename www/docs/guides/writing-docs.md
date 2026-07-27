@@ -1,63 +1,90 @@
 ---
 title: Writing docs
-description: How pages, frontmatter, headings, and callouts work in Flect.
+description: How pages, routes, frontmatter, headings, callouts, and sidebars work in Almanac.
 ---
 
-## Pages live in the docs collection
+## Pages live in a top-level directory
 
-Every `.md` file under `docs/` at the project root is an entry in the `docs` content collection, defined in `src/content.config.ts`. A single catch-all route at `src/pages/docs/[...slug].astro` renders every entry through `DocsLayout`, so adding a page means creating a file and writing frontmatter. There's no per-file layout wiring and no relative path to compute.
-
-For example:
+Docs content sits in `docs/` at the project root, not under `src/`. `docsLoader()` globs it into the `docs` collection, and Almanac injects one catch-all route that renders every entry. Adding a page means adding a file:
 
 - `docs/index.md` → `/docs/`
 - `docs/guides/writing-docs.md` → `/docs/guides/writing-docs/`
 - `docs/reference/configuration.md` → `/docs/reference/configuration/`
 
-Add a new file in the right folder and the route exists automatically. (You still need a sidebar entry; see [Updating the sidebar](#updating-the-sidebar) below.)
+An `index` file serves its directory. `docs.path` moves the directory, and `docs.base` moves the URL prefix (set `base: ""` to serve docs at the site root).
 
-## Required frontmatter
+Files and directories starting with an underscore are skipped, so `docs/_partials/note.md` is not a page. `.md`, `.mdx`, and `.mdoc` are all globbed, but MDX and Markdoc only work if you also add the matching Astro integration.
 
-Every docs entry needs exactly two frontmatter fields, validated by the schema in `src/content.config.ts`:
+## Frontmatter
 
-```md
+`title` is the only required field:
+
+```yaml
 ---
-title: Your page title
-description: A one-sentence summary shown under the title and used for the OG image.
+title: Writing docs
+description: Shown under the title and used for meta tags and search.
+slug: custom/url          # overrides the URL derived from the file path
+sidebar:
+  label: Writing          # shorter label for the sidebar
+  order: 2                # lower sorts first
+  badge: New              # or { text: "New", variant: "tip" }
+  hidden: false           # keep the page but drop it from the sidebar
+draft: false              # true keeps the page out of the build
 ---
 ```
 
-That's it: no `layout` field to point at `DocsLayout.astro`. The catch-all route applies the layout once, so nesting a page more deeply never changes what its frontmatter looks like.
+`title` and `description` show up in the page header, the browser tab title, the JSON-LD breadcrumb data, and the Pagefind index, so keep both short and accurate.
 
-`title` and `description` both show up in the page header, in the browser tab title, in the generated OG image, and in the JSON-LD breadcrumb data, so keep them short and accurate.
+<div class="callout note">
+The schema also accepts `template`, `tableOfContents`, `prev`, `next`, `editUrl`, `lastUpdated`, and `head`. They validate today, but the current layouts ignore them: there is no splash template, per-page table of contents depths, pager overrides, edit link, or last-updated line yet. Use the fields listed above and treat the rest as reserved.
+</div>
 
 ## Headings populate the table of contents
 
-The right-hand table of contents on every docs page is generated automatically from the page's Markdown headings. You don't maintain it by hand. Just write normal `##` and `###` headings and they'll appear in order.
+The table of contents on the right of every docs page is generated from the page's `##` and `###` headings, in document order. You never maintain it by hand. As you scroll, an `IntersectionObserver` highlights the heading you're in, and on narrow screens the same list collapses into an "On this page" panel.
+
+Deeper headings (`####` and below) are rendered in the page but left out of the table of contents.
 
 ## Linking between docs pages
 
-Link to other docs pages with a path relative to the current page, not a root-relative one:
+Link with a path relative to the current page, not a root-relative one:
 
 ```md
 See [Theming](../guides/theming/) for the color system.
 ```
 
-Flect is typically deployed under a base path, `/flect` by default (see [Deployment](../../reference/deployment/)). A relative link resolves correctly under any base path automatically; a root-relative link like `/docs/guides/theming/` would silently skip the base path and 404 in production.
+Almanac sites are often served under a base path (this one is served under `/almanac`, see [Deployment](../../reference/deployment/)). A relative link resolves correctly under any base; a root-relative link like `/docs/guides/theming/` skips the base path and 404s in production.
 
 ## Callouts
 
-Wrap a paragraph in a `<div>` with class `callout note` or `callout warning` to render a styled admonition box (the styles already exist in `src/styles/global.css`):
+Wrap a paragraph in a `<div>` with class `callout note` or `callout warning` to get a styled admonition. The styles ship with the framework, so there is nothing to import:
 
 ```md
 <div class="callout note">
-Notes are for helpful context that isn't essential to follow the main instructions.
+Notes are for helpful context that isn't essential to following the instructions.
 </div>
 
 <div class="callout warning">
-Warnings are for things that can break a build or cause data loss if skipped.
+Warnings are for things that break a build or lose data if skipped.
 </div>
 ```
 
-## Updating the sidebar
+## Sidebars
 
-Adding a page doesn't automatically add it to navigation. You also need a matching entry in `src/data/navigation.ts` (inside the right `NavGroup`'s `items` array), or the page will be reachable by direct URL but invisible in the sidebar. See the [Configuration reference](../../reference/configuration/) for the exact shape of that file.
+Leave `docs.sidebar` out of your config and Almanac autogenerates the navigation: pages are grouped by their top-level directory, root-level pages lead under an "Overview" heading, and each group is sorted by `sidebar.order` first and alphabetically by label after. New files appear on their own.
+
+Set `docs.sidebar` and you control the order instead. An entry can be a doc id, an explicit doc with a new label, an external link, a nested category, or an autogenerated directory:
+
+```js
+sidebar: [
+	"index",
+	{ doc: "start/installation", label: "Install" },
+	{ link: "https://astro.build", label: "Astro" },
+	{ label: "Guides", items: ["guides/writing-docs", { label: "Deep", items: ["guides/search"] }] },
+	{ autogenerate: { directory: "reference", collapsed: true } },
+]
+```
+
+Ids that don't resolve to a page are dropped rather than failing the build, which means a typo shows up as a missing sidebar link. With an explicit sidebar, adding a page does not add it to the navigation: add its id here too.
+
+The previous/next pager at the foot of each page walks the flattened sidebar, so sidebar order is also reading order. External links are excluded from it.
