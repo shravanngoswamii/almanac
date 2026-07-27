@@ -6,12 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": [
-			"**",
-			"!**/dist",
-			"!**/.astro",
-			"!**/node_modules"
-		]
+		"includes": ["**", "!**/dist", "!**/.astro", "!**/node_modules"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -30,9 +25,7 @@
 	},
 	"overrides": [
 		{
-			"includes": [
-				"**/*.astro"
-			],
+			"includes": ["**/*.astro"],
 			"linter": {
 				"rules": {
 					"correctness": {
@@ -43,9 +36,7 @@
 			}
 		},
 		{
-			"includes": [
-				"**/*.css"
-			],
+			"includes": ["**/*.css"],
 			"linter": {
 				"rules": {
 					"complexity": {
