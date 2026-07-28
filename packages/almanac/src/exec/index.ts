@@ -2,6 +2,7 @@ import type { ExecCache, ExecOutput } from "./cache.ts";
 import type { CacheKeyInput } from "./key.ts";
 import { nodeRunner } from "./runners/node.ts";
 import { pythonRunner } from "./runners/python.ts";
+import { rRunner } from "./runners/r.ts";
 import {
 	registerRunner,
 	type RunOptions,
@@ -18,6 +19,7 @@ export {
 	pythonEngineId,
 	runPython,
 } from "./runners/python.ts";
+export { R_LANGUAGES, rAvailable, rEngineId, runR } from "./runners/r.ts";
 export {
 	clearRunners,
 	registerRunner,
@@ -31,6 +33,7 @@ export {
 // including in the config validation that reports what a project can run.
 registerRunner(nodeRunner);
 registerRunner(pythonRunner);
+registerRunner(rRunner);
 
 export interface ExecuteRequest {
 	code: string;
