@@ -161,7 +161,7 @@ pnpm --filter starter dev</code></pre>
 						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 					</svg>
 				</summary>
-				<p>JavaScript and TypeScript today, each in its own process with a timeout. Python through Pyodide, R through WebR, and real Jupyter kernels are planned. A language without a runner renders as an ordinary highlighted block rather than an error.</p>
+				<p>JavaScript, TypeScript, and Python, each in its own process with a timeout. Python runs through Pyodide, so no system Python is needed. R through WebR and real Jupyter kernels are not built. A language without a runner renders as an ordinary highlighted block rather than an error.</p>
 			</details>
 			<details class="faq-item">
 				<summary>Can it produce a PDF?
@@ -169,7 +169,7 @@ pnpm --filter starter dev</code></pre>
 						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 					</svg>
 				</summary>
-				<p>Not yet, and it would be dishonest to imply otherwise. Multi-format output needs a real document AST first, which is the next milestone. The plan is MyST for the AST and Typst for print.</p>
+				<p>Yes. Turn on <code>future.pdf</code> and every docs page is typeset by Typst from the same document tree the web page came from, executed output included. No system Typst needed. What is missing is templates: the styling is not yet configurable.</p>
 			</details>
 			<details class="faq-item">
 				<summary>How does it compare to Starlight or Docusaurus?
@@ -177,7 +177,7 @@ pnpm --filter starter dev</code></pre>
 						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 					</svg>
 				</summary>
-				<p>Both are more mature and better supported, and neither executes code. If you want a docs site backed by a team, use them. Almanac exists for technical and scientific writing where the output of your code belongs on the page.</p>
+				<p>Both are far more mature and better supported, and neither executes code or typesets a PDF from the same source. If you want a docs site backed by a team, use them. Almanac exists for technical and scientific writing where the output of your code belongs on the page.</p>
 			</details>
 			<details class="faq-item">
 				<summary>Is it ready for my project?
@@ -185,7 +185,7 @@ pnpm --filter starter dev</code></pre>
 						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 					</svg>
 				</summary>
-				<p>It builds this site, so it works. It is also not on npm yet, pre-1.0, maintained by one person, and has no docs versioning or i18n. Clone the repository and run the starter if you want to try it. Treat it as early software that is honest about being early.</p>
+				<p>It builds this site, so it works. It is also not on npm yet, pre-1.0, and maintained by one person. Clone the repository and run the starter if you want to try it. Treat it as early software that is honest about being early.</p>
 			</details>
 		</div>
 	</section>

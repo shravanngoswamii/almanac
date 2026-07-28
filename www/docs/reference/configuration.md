@@ -81,6 +81,9 @@ See [Theming](../../guides/theming/) for the full list of theme ids.
 | --- | --- | --- | --- |
 | `components` | record | `{}` | Maps a built-in component name to your own `.astro` file. Accepted names: `Header`, `Footer`, `Sidebar`, `TableOfContents`, `Pager`, `Search`, `ThemePicker`, `Logo`, `BlogCard`, `PageTitle` |
 | `onBrokenLinks` | `ignore` / `log` / `warn` / `throw` | `"warn"` | What to do about internal links that resolve to no page. Checked against the built output when the build finishes |
+| `versions` | array | `[]` | Older documentation versions, newest first. Each takes `name`, optional `label`, optional `path`. See [Versions and translations](../../guides/versions-and-locales/) |
+| `i18n.defaultLocale` | string | `"en"` | The locale served without a URL prefix |
+| `i18n.locales` | array | `[]` | Each takes `code`, optional `label`, optional `dir`, optional `path` |
 | `onBrokenAnchors` | same | `"warn"` | Same, for `#fragment` targets that no element on the destination page carries |
 | `future.myst` | boolean | `false` | Parse through a MyST AST: cross references, numbered figures, directives, roles. See [MyST syntax](../../guides/myst/) |
 | `future.execute` | boolean | `false` | Run fenced blocks marked `exec` and embed their output. See [Executable code](../../guides/executable-code/) |

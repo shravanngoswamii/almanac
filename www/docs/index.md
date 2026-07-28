@@ -21,14 +21,21 @@ This site is built with Almanac, so what you are reading is the framework render
 - **An optional terminal-recording player**, [`<PromptCast />`](guides/terminal-demos/), for documenting CLIs.
 - **Config validated with Zod**, so a typo fails the build with the path of the problem instead of rendering a broken page.
 
-## What is planned but not built
+## Beyond the web page
 
-Almanac is early. The web renderer is the only layer that exists today. The following are designed, and some are already named in the config, but none of them are implemented, so don't plan around them yet:
+These are built and off by default, because each one is a bigger commitment than rendering Markdown:
 
-- **Executable code blocks.** Running fenced JavaScript and TypeScript at build time and embedding the output is the point of the project. The `future.execute` flag is reserved for it, defaults to `false`, and currently does nothing.
-- **MyST parsing.** `future.myst` is in the same state: reserved, off, inert. Markdown is parsed by Astro today.
-- **PDF and other print output.** Not started.
-- **Internationalization and docs versioning.** Both are on the roadmap, neither exists.
+- **[Executable code blocks](guides/executable-code/).** Run JavaScript, TypeScript, and Python during the build and embed the real output, cached on the code, the language, and the runtime version. Behind `future.execute`.
+- **[MyST parsing](guides/myst/).** Cross references that write their own text, numbered figures, directives, and roles. Behind `future.myst`.
+- **[PDF output](guides/pdf/).** Every docs page typeset by Typst from the same tree the web page came from, executed output included. Behind `future.pdf`.
+- **[Versions and translations](guides/versions-and-locales/).** Both inherit unchanged pages instead of copying them, and build in a single pass.
+
+## What is still missing
+
+- **R and Jupyter kernels.** Only JavaScript, TypeScript, and Python execute. A language without a runner renders as ordinary highlighted code.
+- **Rich execution output.** Text only, though the artifact type already allows images, SVG, HTML, and JSON.
+- **Citations and bibliographies.** `{cite}` parses but there is no bibliography renderer.
+- **PDF templates.** The typeset output is not yet configurable.
 
 ## Where the pieces live
 

@@ -22,6 +22,14 @@ export default defineConfig({
 			},
 			// On here so every CI build exercises the MyST pipeline. Turn it off
 			// and the same content still renders, through remark instead.
+			versions: [{ name: "1.0", label: "1.0 (old)" }],
+			i18n: {
+				defaultLocale: "en",
+				locales: [
+					{ code: "en", label: "English" },
+					{ code: "fr", label: "Français" },
+				],
+			},
 			future: { myst: true, execute: true, pdf: true },
 		}),
 	],

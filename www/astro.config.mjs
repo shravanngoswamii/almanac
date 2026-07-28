@@ -43,6 +43,7 @@ export default defineConfig({
 							"guides/executable-code",
 							"guides/myst",
 							"guides/pdf",
+							"guides/versions-and-locales",
 							"guides/link-checking",
 						],
 					},
