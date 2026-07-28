@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { AstroIntegration } from "astro";
 import { checkLinks, reportLinks } from "./build/links.ts";
+import { PdfQueue, writePdfs } from "./pdf/collect.ts";
 import type { AlmanacConfig, AlmanacUserConfig } from "./config/schema.ts";
 import { validateConfig } from "./config/schema.ts";
 import { remarkExec } from "./exec/remark.ts";
@@ -11,6 +12,9 @@ import { mystProcessor } from "./myst/processor.ts";
 import { almanacVitePlugin } from "./vite/virtual-modules.ts";
 
 const PACKAGE_NAME = "almanac";
+
+/** Output directory for typeset pages, matched by the link in DocsLayout. */
+export const PDF_PREFIX = "pdf";
 
 /** Joins a route base with a pattern, tolerating empty or slash-wrapped bases. */
 function routePattern(base: string, rest: string): string {
@@ -77,8 +81,13 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 	// Tallied across the whole build so the summary reports real numbers.
 	const execStats = { ran: 0, cached: 0, failed: 0 };
 
-	// Recorded in config:done, where the base is final, and read in build:done.
+	// Recorded in config:done, where these are final, and read in build:done.
 	let resolvedBase = "/";
+	let resolvedRoot = process.cwd();
+	let resolvedSite: string | undefined;
+
+	// Filled while content renders, drained after the build.
+	const pdfQueue = new PdfQueue();
 
 	return {
 		name: PACKAGE_NAME,
@@ -106,6 +115,14 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 								else if (info.cached) execStats.cached += 1;
 								else execStats.ran += 1;
 							},
+							...(config.future.pdf
+								? {
+										pdf: {
+											queue: pdfQueue,
+											docsDir: path.resolve(root, config.docs.path),
+										},
+									}
+								: {}),
 							onWarnings: (file, warnings) => {
 								for (const warning of warnings) {
 									logger.warn(`${file}: ${warning}`);
@@ -217,6 +234,8 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 
 			"astro:config:done": ({ config: astroConfig }) => {
 				resolvedBase = astroConfig.base;
+				resolvedRoot = fileURLToPath(astroConfig.root);
+				resolvedSite = astroConfig.site;
 			},
 			"astro:build:done": async ({ dir, logger }) => {
 				const outDir = fileURLToPath(dir);
@@ -226,6 +245,29 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 						`executed ${ran} block${ran === 1 ? "" : "s"}, reused ${cached} from cache${failed ? `, ${failed} failed` : ""}`,
 					);
 				}
+				if (config.future.pdf) {
+					if (pdfQueue.size === 0) {
+						logger.warn("no pages were queued for PDF output");
+					} else {
+						logger.info(
+							`typesetting ${pdfQueue.size} page${pdfQueue.size === 1 ? "" : "s"} as PDF`,
+						);
+						const { written, failed } = await writePdfs(pdfQueue, {
+							root: resolvedRoot,
+							outDir,
+							prefix: PDF_PREFIX,
+							author: config.author?.name,
+							site: resolvedSite,
+							onError: (id, message) =>
+								logger.warn(`PDF for ${id} failed: ${message}`),
+							onNote: (id, message) => logger.warn(`${id}: ${message}`),
+						});
+						logger.info(
+							`wrote ${written} PDF${written === 1 ? "" : "s"}${failed ? `, ${failed} failed` : ""}`,
+						);
+					}
+				}
+
 				const checkingLinks = config.onBrokenLinks !== "ignore";
 				const checkingAnchors = config.onBrokenAnchors !== "ignore";
 				if (checkingLinks || checkingAnchors) {

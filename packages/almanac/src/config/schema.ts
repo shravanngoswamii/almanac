@@ -110,8 +110,18 @@ const FutureSchema = z
 		myst: z.boolean().default(false),
 		/** M2: run fenced code blocks and embed their output. */
 		execute: z.boolean().default(false),
+		/**
+		 * M4: also typeset every docs page as a PDF. Needs `myst`, because the
+		 * PDF is generated from the same document tree the page is.
+		 */
+		pdf: z.boolean().default(false),
 	})
-	.prefault({});
+	.prefault({})
+	.refine((value) => !value.pdf || value.myst, {
+		message:
+			"future.pdf needs future.myst: the PDF is built from the MyST tree",
+		path: ["pdf"],
+	});
 
 export const AlmanacConfigSchema = z.object({
 	title: z.string(),

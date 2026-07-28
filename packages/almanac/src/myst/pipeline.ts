@@ -31,6 +31,12 @@ export interface RenderMystOptions {
 
 export interface RenderMystResult {
 	html: string;
+	/**
+	 * The document tree, after references resolved and execution output landed.
+	 * Handed back so other outputs are generated from the same tree the page
+	 * came from rather than a second parse that could disagree with it.
+	 */
+	tree: MystNode;
 	headings: MystHeading[];
 	localImagePaths: string[];
 	remoteImagePaths: string[];
@@ -118,6 +124,7 @@ export async function renderMyst(
 
 	return {
 		html,
+		tree,
 		headings,
 		localImagePaths: claimed.local,
 		remoteImagePaths: claimed.remote,
