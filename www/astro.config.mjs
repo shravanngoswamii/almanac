@@ -24,6 +24,7 @@ export default defineConfig({
 			editUrl:
 				"https://github.com/shravanngoswamii/almanac/edit/main/www/{path}",
 			docs: {
+				lastUpdated: true,
 				enabled: true,
 				path: "docs",
 				base: "docs",
@@ -40,6 +41,7 @@ export default defineConfig({
 							"guides/theming",
 							"guides/terminal-demos",
 							"guides/executable-code",
+							"guides/link-checking",
 						],
 					},
 					{

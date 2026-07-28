@@ -18,6 +18,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # docs.lastUpdated reads the last commit date of each file, and a
+          # shallow clone would date every page to whenever CI ran.
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
 
