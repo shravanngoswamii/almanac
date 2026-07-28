@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import type { AstroIntegration } from "astro";
 import { checkLinks, reportLinks } from "./build/links.ts";
 import { PdfQueue, writePdfs } from "./pdf/collect.ts";
+import { sidebarOrder } from "./utils/sidebar.ts";
 import type { AlmanacConfig, AlmanacUserConfig } from "./config/schema.ts";
 import { validateConfig } from "./config/schema.ts";
 import { remarkExec } from "./exec/remark.ts";
@@ -88,6 +89,9 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 
 	// Filled while content renders, drained after the build.
 	const pdfQueue = new PdfQueue();
+
+	// One timestamp per build, so a cover page and every footer agree.
+	const buildDate = new Date().toISOString().slice(0, 10);
 
 	return {
 		name: PACKAGE_NAME,
@@ -252,18 +256,52 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 						logger.info(
 							`typesetting ${pdfQueue.size} page${pdfQueue.size === 1 ? "" : "s"} as PDF`,
 						);
-						const { written, failed } = await writePdfs(pdfQueue, {
+						const { written, failed, book } = await writePdfs(pdfQueue, {
 							root: resolvedRoot,
 							outDir,
 							prefix: PDF_PREFIX,
 							author: config.author?.name,
 							site: resolvedSite,
+							perPage: config.pdf.perPage,
+							...(config.pdf.template ? { template: config.pdf.template } : {}),
+							style: {
+								paper: config.pdf.paper,
+								...(config.pdf.margin ? { margin: config.pdf.margin } : {}),
+								...(config.pdf.bodyFont
+									? { bodyFont: config.pdf.bodyFont }
+									: {}),
+								...(config.pdf.monoFont
+									? { monoFont: config.pdf.monoFont }
+									: {}),
+								...(config.pdf.bodySize
+									? { bodySize: config.pdf.bodySize }
+									: {}),
+								...(config.pdf.accent ? { accent: config.pdf.accent } : {}),
+								...(config.pdf.numberHeadings !== undefined
+									? { numberHeadings: config.pdf.numberHeadings }
+									: {}),
+							},
+							book: {
+								...config.pdf.book,
+								title: config.pdf.book.title ?? config.title,
+								subtitle: config.pdf.book.subtitle ?? config.tagline,
+								// The sidebar is the author's own reading order, so it
+								// beats anything derived from the filesystem.
+								order:
+									config.pdf.book.order ?? sidebarOrder(config.docs.sidebar),
+							},
+							// Stamped once per build rather than per page, so two pages
+							// in the same build cannot disagree about the date.
+							date: buildDate,
 							onError: (id, message) =>
 								logger.warn(`PDF for ${id} failed: ${message}`),
 							onNote: (id, message) => logger.warn(`${id}: ${message}`),
 						});
+						const bookNote = book?.written
+							? `, and a ${book.chapters} chapter book`
+							: "";
 						logger.info(
-							`wrote ${written} PDF${written === 1 ? "" : "s"}${failed ? `, ${failed} failed` : ""}`,
+							`wrote ${written} PDF${written === 1 ? "" : "s"}${bookNote}${failed ? `, ${failed} failed` : ""}`,
 						);
 					}
 				}

@@ -46,6 +46,48 @@ const SidebarItemSchema: z.ZodType<SidebarItem> = z.lazy(() =>
 	]),
 );
 
+/**
+ * PDF output. Everything here has a sensible default, and `template` is the
+ * escape hatch: a Typst file that replaces the built-in styling entirely, so the
+ * ceiling on customization is Typst's rather than this schema's.
+ */
+const PdfSchema = z
+	.object({
+		/** Emit one PDF per docs page. */
+		perPage: z.boolean().default(true),
+		/** Typst template for a single page, relative to the project root. */
+		template: z.string().optional(),
+		paper: z.string().default("a4"),
+		/** Raw Typst margin value. */
+		margin: z.string().optional(),
+		bodyFont: z.array(z.string()).optional(),
+		monoFont: z.array(z.string()).optional(),
+		bodySize: z.string().optional(),
+		accent: z.string().optional(),
+		numberHeadings: z.boolean().optional(),
+		/** One PDF containing every page, with a cover and a table of contents. */
+		book: z
+			.object({
+				enabled: z.boolean().default(false),
+				filename: z.string().default("book.pdf"),
+				/** Defaults to the site title. */
+				title: z.string().optional(),
+				subtitle: z.string().optional(),
+				template: z.string().optional(),
+				toc: z
+					.object({
+						enabled: z.boolean().default(true),
+						title: z.string().default("Contents"),
+						depth: z.number().int().min(1).max(6).default(2),
+					})
+					.prefault({}),
+				/** Reading order by page id. Unlisted pages follow, sorted. */
+				order: z.array(z.string()).optional(),
+			})
+			.prefault({}),
+	})
+	.prefault({});
+
 /** A published documentation version, newest first in the list. */
 const VersionSchema = z.object({
 	name: z.string(),
@@ -200,6 +242,8 @@ export const AlmanacConfigSchema = z.object({
 			locales: z.array(LocaleSchema).default([]),
 		})
 		.prefault({}),
+
+	pdf: PdfSchema,
 
 	future: FutureSchema,
 });
