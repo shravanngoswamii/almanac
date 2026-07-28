@@ -36,7 +36,27 @@ draft: false              # true keeps the page out of the build
 `title` and `description` show up in the page header, the browser tab title, the JSON-LD breadcrumb data, and the Pagefind index, so keep both short and accurate.
 
 <div class="callout note">
-The schema also accepts `template`, `tableOfContents`, `prev`, `next`, `editUrl`, `lastUpdated`, and `head`. They validate today, but the current layouts ignore them: there is no splash template, per-page table of contents depths, pager overrides, edit link, or last-updated line yet. Use the fields listed above and treat the rest as reserved.
+The schema also accepts these, and all of them are honoured:
+
+| Field | Effect |
+|---|---|
+| `template` | `"splash"` drops the sidebar, table of contents, pager, and the automatic title header, so the page composes its own hero |
+| `tableOfContents` | `false` hides it; `{ minDepth, maxDepth }` overrides the site-wide depths for this page |
+| `prev` / `next` | `false` removes that pager link; `{ link, label }` points it somewhere of your choosing |
+| `editUrl` | `false` opts the page out of the site-wide edit link; a string replaces it |
+| `lastUpdated` | A date overrides the git commit date; `false` hides the line |
+| `head` | Extra tags in this page's `<head>`, merged after the site-wide ones |
+
+For example, a landing page with no chrome and a pager that only goes forward:
+
+```yaml
+---
+title: Welcome
+template: splash
+prev: false
+next: { link: /docs/start/installation/, label: Install it }
+---
+```
 </div>
 
 ## Headings populate the table of contents

@@ -28,12 +28,12 @@ export default defineConfig({
 | `author.name` | string | none | Footer copyright line |
 | `author.url` | URL | none | Link on the footer author name |
 | `favicon` | string | `"/favicon.svg"` | Favicon path |
-| `logo.light` / `logo.dark` / `logo.alt` | string | none | Reserved for a custom logo |
+| `logo.light` / `logo.dark` / `logo.alt` | string | none | Image paths that replace the built-in mark. Give both modes and CSS swaps them with no flash |
 | `social.github` | URL | none | Header and footer GitHub links |
 | `social.sponsor` | URL | none | Header and footer "Support" links; omit and they disappear |
-| `social.x` / `bluesky` / `mastodon` / `discord` / `email` | string | none | Reserved |
-| `editUrl` | string | none | Reserved template for edit links, for example `"https://github.com/o/r/edit/main/{path}"` |
-| `head` | array | `[]` | Reserved list of extra head tags |
+| `social.x` / `bluesky` / `mastodon` / `discord` / `email` | string | none | Icon links in the footer. `email` accepts a bare address and gets a `mailto:` prefix |
+| `editUrl` | string | none | Template for "Edit this page" links, for example `"https://github.com/o/r/edit/main/{path}"`. Without `{path}` the source path is appended |
+| `head` | array | `[]` | Extra tags in every page's `<head>`. Pages can add their own with frontmatter `head` |
 
 ## `docs`
 
@@ -45,7 +45,7 @@ export default defineConfig({
 | `sidebar` | array | omitted | Explicit navigation; leave it out to group by directory |
 | `pager` | boolean | `true` | Previous/next links |
 | `toc.minDepth` / `toc.maxDepth` | 1 to 6 | `2` / `3` | Heading depths in the table of contents |
-| `lastUpdated` | boolean | `false` | Reserved last-updated line |
+| `lastUpdated` | boolean | `false` | Adds a last-updated line, dated from the file's last git commit. Needs full history, so set `fetch-depth: 0` in CI |
 
 ## `blog`
 
@@ -65,7 +65,7 @@ export default defineConfig({
 | --- | --- | --- | --- |
 | `default` | string | `"almanac-light"` | Theme used before a visitor picks one |
 | `include` | `"all"` or string[] | `"all"` | Which themes ship and appear in the picker. Entries can be full ids or family names; the `almanac` family is always kept |
-| `customCss` | string[] | `[]` | Reserved list of extra stylesheets |
+| `customCss` | string[] | `[]` | Extra stylesheets, linked after the framework's own so they win |
 
 See [Theming](../../guides/theming/) for the full list of theme ids.
 
@@ -80,10 +80,10 @@ See [Theming](../../guides/theming/) for the full list of theme ids.
 | Option | Type | Default | Controls |
 | --- | --- | --- | --- |
 | `components` | record | `{}` | Maps a built-in component name to your own `.astro` file. Accepted names: `Header`, `Footer`, `Sidebar`, `TableOfContents`, `Pager`, `Search`, `ThemePicker`, `Logo`, `BlogCard`, `PageTitle` |
-| `onBrokenLinks` | `ignore` / `log` / `warn` / `throw` | `"warn"` | Reserved severity for broken internal links |
-| `onBrokenAnchors` | same | `"warn"` | Reserved severity for broken anchors |
-| `future.myst` | boolean | `false` | Reserved: parse through a MyST AST instead of straight to HTML |
-| `future.execute` | boolean | `false` | Reserved: run fenced code blocks and embed their output |
+| `onBrokenLinks` | `ignore` / `log` / `warn` / `throw` | `"warn"` | What to do about internal links that resolve to no page. Checked against the built output when the build finishes |
+| `onBrokenAnchors` | same | `"warn"` | Same, for `#fragment` targets that no element on the destination page carries |
+| `future.myst` | boolean | `false` | Reserved: parse through a MyST AST instead of straight to HTML. Not implemented |
+| `future.execute` | boolean | `false` | Run fenced blocks marked `exec` and embed their output. See [Executable code](../../guides/executable-code/) |
 
 Unfinished subsystems ship behind `future` flags first, so a minor release can't move the ground under a site that is already published.
 
@@ -109,12 +109,8 @@ Page-level options live in frontmatter instead; see [Writing docs](../../guides/
 
 ## Not wired up yet
 
-These options validate and are documented above as reserved, but the current web renderer ignores them. They are listed here so you can tell a no-op from a mistake:
+One option still validates without doing anything, listed here so you can tell a no-op from a mistake:
 
-- `logo`, `favicon` (the layout serves `/favicon.svg` directly), `head`, `editUrl`, and every `social` field except `github` and `sponsor`.
-- `theme.customCss`.
-- `components`. The map is validated and a virtual module is generated from it, but the built-in layouts still import their own components directly, so an override has no effect today.
-- `docs.pager` (the pager always renders), `docs.toc` depths (fixed at `##` and `###`), and `docs.lastUpdated`.
-- `blog.postsPerPage` (the index paginates at 8) and `blog.readingTime` (always shown).
-- `onBrokenLinks` and `onBrokenAnchors`: there is no link checker yet.
-- `future.myst` and `future.execute`: nothing reads them.
+- `future.myst`. Nothing reads it. It is a placeholder for the document AST that multi-format output needs, and until that exists the flag is inert.
+
+Everything else on this page is honoured by the renderer.
