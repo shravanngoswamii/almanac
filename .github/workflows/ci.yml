@@ -41,3 +41,8 @@ jobs:
 
       - name: Build the starter, so a fresh site is never broken
         run: pnpm --filter almanac-starter build
+
+      # The starter is deliberately lean, so it cannot prove the optional
+      # features still work. The fixture turns all of them on.
+      - name: Build the fixture, so every optional feature stays working
+        run: pnpm --filter almanac-fixture build
