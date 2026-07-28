@@ -46,6 +46,22 @@ const SidebarItemSchema: z.ZodType<SidebarItem> = z.lazy(() =>
 	]),
 );
 
+/** A published documentation version, newest first in the list. */
+const VersionSchema = z.object({
+	name: z.string(),
+	label: z.string().optional(),
+	/** Defaults to versioned_docs/version-<name>. */
+	path: z.string().optional(),
+});
+
+const LocaleSchema = z.object({
+	code: z.string(),
+	label: z.string().optional(),
+	dir: z.enum(["ltr", "rtl"]).default("ltr"),
+	/** Defaults to i18n/<code>/<docs path>. */
+	path: z.string().optional(),
+});
+
 const SeveritySchema = z
 	.enum(["ignore", "log", "warn", "throw"])
 	.default("warn");
@@ -166,6 +182,24 @@ export const AlmanacConfigSchema = z.object({
 
 	onBrokenLinks: SeveritySchema,
 	onBrokenAnchors: SeveritySchema,
+
+	/**
+	 * Older documentation versions. An old version stores only the pages it
+	 * changed and inherits the rest, so adding one costs a directory rather than
+	 * a copy of the whole tree.
+	 */
+	versions: z.array(VersionSchema).default([]),
+
+	/**
+	 * Translations, built in a single pass with locale prefixed routes. An
+	 * untranslated page falls back to the default locale rather than 404ing.
+	 */
+	i18n: z
+		.object({
+			defaultLocale: z.string().default("en"),
+			locales: z.array(LocaleSchema).default([]),
+		})
+		.prefault({}),
 
 	future: FutureSchema,
 });
