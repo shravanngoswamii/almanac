@@ -217,3 +217,14 @@ export function flattenNav(groups: NavGroup[]): NavItem[] {
 		.flatMap((group) => group.items)
 		.filter((item) => !item.external);
 }
+
+/**
+ * The URL slug for a docs entry id.
+ *
+ * A variant's index page has to lose its "index" segment the same way the root
+ * one does, or `/docs/1.0/` would 404 while `/docs/1.0/index/` worked.
+ */
+export function slugForId(id: string): string | undefined {
+	if (id === "index") return undefined;
+	return id.endsWith("/index") ? id.slice(0, -"/index".length) : id;
+}

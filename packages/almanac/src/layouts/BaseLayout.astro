@@ -35,6 +35,8 @@ const {
 	ogType = "website",
 	structuredData,
 	head: pageHead = [],
+	lang = config.i18n.defaultLocale,
+	dir = "ltr",
 } = Astro.props;
 const pageTitle =
 	title === siteConfig.name ? siteConfig.name : `${title} | ${siteConfig.name}`;
@@ -96,7 +98,7 @@ const renderHeadTag = (tag: {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang} dir={dir}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />

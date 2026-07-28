@@ -3,15 +3,14 @@ import { type CollectionEntry, getCollection, render } from "astro:content";
 import DocsLayout from "../layouts/DocsLayout.astro";
 import { config } from "../config";
 import { gitLastModified } from "../utils/gitDate";
+import { slugForId } from "../utils/sidebar";
 
 export async function getStaticPaths() {
 	const entries = await getCollection("docs");
 	return entries
 		.filter((entry) => !entry.data.draft)
 		.map((entry) => ({
-			params: {
-				slug: entry.data.slug ?? (entry.id === "index" ? undefined : entry.id),
-			},
+			params: { slug: entry.data.slug ?? slugForId(entry.id) },
 			props: entry,
 		}));
 }

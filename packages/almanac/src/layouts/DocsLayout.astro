@@ -1,9 +1,16 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
-import { TableOfContents } from "virtual:almanac/components";
+import { TableOfContents, VariantPicker } from "virtual:almanac/components";
 import { siteConfig, config } from "../config";
 import { buildSidebar, docHref, flattenNav } from "../utils/sidebar";
+import {
+	buildVariants,
+	scopeEntries,
+	scopedBase,
+	stripPrefix,
+	variantForId,
+} from "../content/variants";
 import { withBase } from "../lib/paths";
 
 const { frontmatter, headings, entryId, gitLastUpdated } = Astro.props;
@@ -41,12 +48,34 @@ const lastUpdatedLabel = lastUpdated
 	: undefined;
 
 const docsEntries = await getCollection("docs");
-const navGroups = buildSidebar(docsEntries, {
-	base: config.docs.base,
+
+// Every version and locale gets its own sidebar, scoped so that a reader of the
+// 1.0 docs never follows a link into the current ones by accident.
+const variants = buildVariants({
+	base: config.docs.path,
+	versions: config.versions,
+	locales: config.i18n.locales,
+	defaultLocale: config.i18n.defaultLocale,
+});
+const variant = (entryId ? variantForId(entryId, variants) : undefined) ??
+	variants[0] ?? { prefix: "", sources: [] };
+const variantBase = scopedBase(config.docs.base, variant.prefix);
+
+const pageId = entryId ? stripPrefix(entryId, variant.prefix) : "index";
+
+// A translated page has to declare its language, and a right to left script has
+// to declare its direction, or the browser lays it out as if it were English.
+const localeCode = variant.locale ?? config.i18n.defaultLocale;
+const localeDir =
+	config.i18n.locales.find((entry) => entry.code === localeCode)?.dir ?? "ltr";
+const availableIds = new Set(docsEntries.map((entry) => entry.id));
+
+const navGroups = buildSidebar(scopeEntries(docsEntries, variants, variant), {
+	base: variantBase,
 	sidebar: config.docs.sidebar,
 });
 const quickLinks = flattenNav(navGroups);
-const docsRoot = docHref(config.docs.base, "index");
+const docsRoot = docHref(variantBase, "index");
 
 const basePath =
 	import.meta.env.BASE_URL === "/"
@@ -116,17 +145,30 @@ const isSplash = frontmatter.template === "splash";
 
 // Written into `dist/pdf/<id>.pdf` after the build, so the link is predictable
 // from the entry id alone.
+//
+// Only the current version in the default locale is typeset. A variant page can
+// share its source file with the page it inherits from, and the Markdown
+// processor is handed a file path with no way to tell which variant it is
+// rendering, so a variant PDF would silently be a copy of another one.
 const pdfHref =
-	config.future.pdf && entryId ? withBase(`/pdf/${entryId}.pdf`) : undefined;
+	config.future.pdf && entryId && variant.prefix === ""
+		? withBase(`/pdf/${entryId}.pdf`)
+		: undefined;
 const showPager =
 	!isSplash && config.docs.pager && Boolean(prevItem || nextItem);
 ---
 
-<BaseLayout title={title} description={description} bodyClass="docs-page" structuredData={structuredData} head={frontmatter.head}>
+<BaseLayout title={title} description={description} bodyClass="docs-page" structuredData={structuredData} head={frontmatter.head} lang={localeCode} dir={localeDir}>
 	<div class:list={["docs-shell", { splash: isSplash }]}>
 		{!isSplash && (
 		<aside class="docs-sidebar" aria-label="Documentation navigation" data-pagefind-ignore>
 			<a class="docs-home" href={withBase(docsRoot)}>Documentation</a>
+			<VariantPicker
+				pageId={pageId}
+				currentVersion={variant.version}
+				currentLocale={variant.locale}
+				available={availableIds}
+			/>
 			{
 				navGroups.map((group) => (
 					<section>
