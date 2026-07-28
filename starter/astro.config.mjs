@@ -22,7 +22,7 @@ export default defineConfig({
 			},
 			// On here so every CI build exercises the MyST pipeline. Turn it off
 			// and the same content still renders, through remark instead.
-			future: { myst: true, execute: true },
+			future: { myst: true, execute: true, pdf: true },
 		}),
 	],
 });

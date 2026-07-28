@@ -84,6 +84,7 @@ See [Theming](../../guides/theming/) for the full list of theme ids.
 | `onBrokenAnchors` | same | `"warn"` | Same, for `#fragment` targets that no element on the destination page carries |
 | `future.myst` | boolean | `false` | Parse through a MyST AST: cross references, numbered figures, directives, roles. See [MyST syntax](../../guides/myst/) |
 | `future.execute` | boolean | `false` | Run fenced blocks marked `exec` and embed their output. See [Executable code](../../guides/executable-code/) |
+| `future.pdf` | boolean | `false` | Typeset every docs page as a PDF. Requires `future.myst`. See [PDF output](../../guides/pdf/) |
 
 Unfinished subsystems ship behind `future` flags first, so a minor release can't move the ground under a site that is already published.
 
