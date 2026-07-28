@@ -8,6 +8,9 @@ import { cacheKey } from "../src/exec/key.ts";
 import {
 	execute,
 	isNodeLanguage,
+	rAvailable,
+	rEngineId,
+	runR,
 	nodeEngineId,
 	pythonAvailable,
 	pythonEngineId,
@@ -274,6 +277,10 @@ describe("runner registry", () => {
 		assert.equal(runnerFor("py")?.id, "pyodide");
 	});
 
+	it("claims r", () => {
+		assert.equal(runnerFor("r")?.id, "webr");
+	});
+
 	it("still claims javascript and typescript", () => {
 		assert.equal(runnerFor("js")?.id, "node");
 		assert.equal(runnerFor("ts")?.id, "node");
@@ -357,5 +364,47 @@ describe("transient results", () => {
 			false,
 			"a transient failure must not be served from the cache",
 		);
+	});
+});
+
+describe("runR", () => {
+	const root = process.cwd();
+
+	it("runs real r and captures both streams", async () => {
+		const result = await runR("cat('sum:', sum(1:10), '\n')\nprint(2L + 2L)", {
+			root,
+		});
+		assert.equal(result.error, undefined);
+		assert.match(result.stdout, /sum: 55/);
+		assert.match(result.stdout, /\[1\] 4/);
+	});
+
+	it("marks a stop() as an error, not just output", async () => {
+		// R writes errors to stderr rather than raising, so without recognising
+		// them the block would render as a success that happens to print an error.
+		const result = await runR("stop('deliberate failure')", { root });
+		assert.match(result.error ?? "", /deliberate failure/);
+		assert.notEqual(result.transient, true);
+	});
+
+	it("keeps a warning as a warning rather than a failure", async () => {
+		const result = await runR("warning('careful')\ncat('after\n')", { root });
+		assert.equal(result.error, undefined);
+		assert.match(result.stderr, /careful/);
+		assert.match(result.stdout, /after/);
+	});
+
+	it("kills a runaway block and marks the timeout transient", async () => {
+		const result = await runR("while (TRUE) {}", { root, timeoutMs: 3000 });
+		assert.match(result.error ?? "", /timed out after 3000ms/);
+		assert.equal(result.transient, true);
+	});
+
+	it("names webr in the engine id", () => {
+		assert.match(rEngineId(root), /^webr-\d/);
+	});
+
+	it("reports the runtime as available when the peer is installed", () => {
+		assert.equal(rAvailable(root), true);
 	});
 });
