@@ -30,7 +30,7 @@ function canonical(value: unknown): string {
 	return `{${entries.join(",")}}`;
 }
 
-export const CACHE_VERSION = 1;
+export const CACHE_VERSION = 2;
 
 /**
  * Content-addressed key for one execution. Deliberately includes a version so

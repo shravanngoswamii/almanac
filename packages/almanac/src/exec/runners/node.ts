@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import type { ExecOutput } from "../cache.ts";
 
 export interface RunOptions {
@@ -82,14 +83,24 @@ export async function runNode(
 				stderr += chunk.toString();
 			});
 
+			// The scratch directory is randomly named, so leaving it in a stack
+			// trace would make the same block produce different HTML on every
+			// machine and defeat the point of a content-addressed cache.
+			const scrub = (text: string) =>
+				text
+					.split(pathToFileURL(dir).href)
+					.join("file:///almanac")
+					.split(dir)
+					.join("/almanac");
+
 			const finish = (error?: string) => {
 				if (settled) return;
 				settled = true;
 				clearTimeout(timer);
 				resolve({
-					stdout: stdout.trimEnd(),
-					stderr: stderr.trimEnd(),
-					...(error ? { error } : {}),
+					stdout: scrub(stdout.trimEnd()),
+					stderr: scrub(stderr.trimEnd()),
+					...(error ? { error: scrub(error) } : {}),
 					durationMs: Math.round(performance.now() - started),
 				});
 			};

@@ -139,6 +139,18 @@ describe("runNode", () => {
 		assert.equal(result.error, undefined);
 	});
 
+	it("keeps the scratch directory out of stack traces", async () => {
+		// Two runs use different temp directories, so identical code must still
+		// produce byte-identical output or the cache would be machine-specific.
+		const [first, second] = await Promise.all([
+			runNode("throw new Error('boom')", "js"),
+			runNode("throw new Error('boom')", "js"),
+		]);
+		assert.equal(first.stderr, second.stderr);
+		assert.doesNotMatch(first.stderr, /almanac-exec-/);
+		assert.match(first.stderr, /boom/);
+	});
+
 	it("captures stderr without treating it as failure", async () => {
 		const result = await runNode("console.error('warn')", "js");
 		assert.equal(result.stderr, "warn");
