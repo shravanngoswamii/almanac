@@ -1,0 +1,23 @@
+---
+import BaseLayout from "almanac/layouts/BaseLayout.astro";
+import { withBase } from "almanac/paths";
+---
+
+<BaseLayout
+	title="My Project"
+	description="Documentation for my project."
+>
+	<section class="hero">
+		<h1>My Project</h1>
+		<div class="actions">
+			<a class="button" href={withBase('/docs/')}>Read the docs</a>
+			<a class="button secondary" href="https://github.com/you/your-project">GitHub</a>
+		</div>
+		<p class="hero-copy">
+			This page is <code>src/pages/index.astro</code>. Rewrite it, or delete it
+			and let <code>/</code> redirect wherever you like. Your documentation
+			lives in <code>docs/</code> and its settings live in
+			<code>astro.config.mjs</code>.
+		</p>
+	</section>
+</BaseLayout>
