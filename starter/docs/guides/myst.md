@@ -97,3 +97,23 @@ for n in (2, 3, 10):
 
 The runtime is an optional peer dependency, so install `pyodide` in projects that
 want it and leave it out of ones that do not.
+
+## A Jupyter kernel, when you have one
+
+Naming a kernel sends the block to a Jupyter server instead of a local runtime,
+which is how you reach an environment Almanac cannot install for you:
+
+````md
+```python exec kernel=python3
+import sys
+print("platform:", sys.platform)
+```
+````
+
+The server URL and token come from `ALMANAC_JUPYTER_URL` and
+`ALMANAC_JUPYTER_TOKEN`, because a token belongs in the environment rather than
+in a config file that gets committed.
+
+That block is shown rather than run, because this starter has no kernel server to
+talk to. Point those variables at one and the same block prints `linux` instead
+of Pyodide's `emscripten`.

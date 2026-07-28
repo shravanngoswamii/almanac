@@ -6,7 +6,8 @@ executable content from one source.
 > Early days, and not on npm yet. Docs, blog, theming, search, link checking,
 > MyST parsing, PDF output, docs versioning, translations, and build-time
 > execution of JavaScript, TypeScript, Python, and R all work, and are dogfooded by
-> this repository's own site and starter. Jupyter kernels are not built.
+> this repository's own site and starter, along with Jupyter kernels for
+> environments Almanac cannot install itself.
 
 ## Quick start
 
@@ -162,10 +163,12 @@ RSS, hero images and reading time, 42 themes, build-time OG images, component
 overrides, a build-time link and anchor checker, MyST parsing with cross
 references and numbered figures, PDF output through Typst, docs versioning and
 translations that inherit rather than copy, and JavaScript, TypeScript,
-Python, and R blocks that execute during the build with their output embedded and
-cached.
+Python, and R blocks that execute during the build with their output embedded
+and cached, plus Jupyter kernels for real environments.
 
-Not built yet: Jupyter kernels, rich execution output beyond text, citations and bibliographies, and PDF templates.
+Not built yet: installing packages into Pyodide or WebR, rich output from those
+two local runtimes (a Jupyter kernel's images and tables do render), citations and
+bibliographies, and PDF templates.
 
 ## Development
 

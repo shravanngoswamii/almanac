@@ -147,12 +147,64 @@ reported as an error.
 WebR starts faster than Pyodide, around half a second. Installing R packages
 from a repository is not wired up, so the base R distribution is what you get.
 
+## Jupyter kernels
+
+Pyodide and WebR are convenient because they need no setup, and limited for the
+same reason: you get the base distribution and nothing you installed yourself.
+When you need a real environment, name a kernel:
+
+````md
+```python exec kernel=python3
+import sys
+print("platform:", sys.platform)
+```
+````
+
+Naming a kernel is what routes the block to a Jupyter server, so a plain
+`python exec` keeps running locally under Pyodide. The two can sit on the same
+page.
+
+Point Almanac at the server through the environment:
+
+```sh
+export ALMANAC_JUPYTER_URL=http://127.0.0.1:8888
+export ALMANAC_JUPYTER_TOKEN=your-token
+```
+
+The token is read from the environment rather than the config file on purpose: a
+credential in `astro.config.mjs` is a credential in version control.
+
+No extra dependency is needed. Almanac talks to the server's REST and WebSocket
+API directly, creating a session per block and deleting it afterwards so a build
+cannot leave kernels running.
+
+If the server is not configured or not reachable, the block reports that where
+its output would go and the rest of the site builds. That failure is never
+cached, so fixing the server and rebuilding is enough.
+
+### Rich output
+
+A kernel can return more than text, and Almanac keeps it:
+
+| Kernel output | Rendered as |
+|---|---|
+| `image/png` | an inline `<img>` |
+| `image/svg+xml` | inline SVG |
+| `text/html` | the markup, as given |
+| `application/json` | a formatted block |
+
+So a matplotlib figure or a pandas table arrives on the page as a figure or a
+table. The plain text alternative is kept alongside it, so the output still reads
+sensibly where an image cannot be shown.
+
+Local runtimes emit text only today. The artifact plumbing is shared, so a
+Pyodide figure is a matter of teaching that driver to capture one.
+
 ## What is not here yet
 
-Real Jupyter kernels are not built: connecting to one means talking to a running
-server over its messaging protocol, which is a different execution model from
-spawning a runtime locally. Blocks in a language without a runner render as
-ordinary highlighted code, so nothing breaks while you wait.
+Installing packages into a runtime. Pyodide gets the Python standard library and
+WebR gets base R; anything beyond that needs a Jupyter kernel with the packages
+already installed.
 
 Failures that are the environment's fault rather than the code's, a runtime that
 is not installed, a driver that dies, a timeout, are never cached. A Python

@@ -32,8 +32,8 @@ These are built and off by default, because each one is a bigger commitment than
 
 ## What is still missing
 
-- **Jupyter kernels.** Connecting to a running kernel is a different execution model from spawning a runtime locally, and is not built. A language without a runner renders as ordinary highlighted code.
-- **Rich execution output.** Text only, though the artifact type already allows images, SVG, HTML, and JSON.
+- **Installing packages into a runtime.** Pyodide gets the Python standard library and WebR gets base R. Anything beyond that needs a [Jupyter kernel](guides/executable-code/) with the packages already installed.
+- **Rich output from the local runtimes.** A Jupyter kernel's images, SVG, HTML, and JSON are rendered; Pyodide and WebR emit text only.
 - **Citations and bibliographies.** `{cite}` parses but there is no bibliography renderer.
 - **PDF templates.** The typeset output is not yet configurable.
 
