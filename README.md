@@ -3,23 +3,31 @@
 A publishing framework for technical and scientific writing. Docs, blog, and
 executable content from one source.
 
-> Early days. Docs, blog, theming, search, and build-time code execution work
-> and are dogfooded by this repository's own site. MyST parsing, PDF output,
-> i18n, and docs versioning are not built yet.
+> Early days, and not on npm yet. Docs, blog, theming, search, link checking,
+> and build-time code execution work and are dogfooded by this repository's own
+> site. MyST parsing, PDF output, i18n, and docs versioning are not built yet.
 
 ## Quick start
 
 ```bash
-npm create almanac@latest my-docs
-cd my-docs
-npm run dev
+git clone https://github.com/shravanngoswamii/almanac.git
+cd almanac && pnpm install
+pnpm --filter starter dev
 ```
 
-That gives you docs routing, a sidebar, instant search, a table of contents,
-40+ themes, and an OG image, from two things you own: `astro.config.mjs` and
-whatever Markdown you put in `docs/`.
+`starter/` is a complete minimal site. That gives you docs routing, a sidebar,
+instant search, a table of contents, 40+ themes, and an OG image, from two
+things you own: `astro.config.mjs` and whatever Markdown you put in `docs/`.
+
+Once it is published, the same thing will be one command:
+
+```bash
+npm create almanac@latest my-docs
+```
 
 ## Adding it to an existing Astro project
+
+Once published:
 
 ```bash
 npm install almanac satori @resvg/resvg-js pagefind

@@ -5,11 +5,22 @@ description: Scaffold a new Almanac site, or add Almanac to an Astro project you
 
 Almanac needs Node 22.12 or newer and Astro 7.
 
-<div class="callout note">
-Almanac is pre-1.0 and moving quickly. Pin the version you install and read the release notes before bumping it.
+<div class="callout caution">
+Almanac is not on npm yet, so the commands on this page do not work today. Until the first release, clone the repository and start from the bundled starter, as shown below. This site is built with that same code.
 </div>
 
-## Start a new site
+## Start from the repository, today
+
+```sh
+git clone https://github.com/shravanngoswamii/almanac.git
+cd almanac
+pnpm install
+pnpm --filter starter dev
+```
+
+`starter/` is a complete minimal site: an `astro.config.mjs`, a `src/content.config.ts`, a homepage, and a `docs/` directory with two example pages. Copy that directory somewhere else and point its `almanac` dependency at your checkout, and you have your own project.
+
+## Start a new site, once it is published
 
 ```sh
 npm create almanac@latest my-docs
@@ -17,11 +28,11 @@ cd my-docs
 npm run dev
 ```
 
-The scaffolder writes a tree with `astro.config.mjs`, `src/content.config.ts`, and a `docs/` directory holding two example pages. That is the whole starting point.
+The scaffolder writes the same tree that `starter/` holds. That is the whole starting point.
 
 ## Add it to an existing Astro project
 
-Install the framework and its peer dependencies. Satori and resvg render the OG image, Pagefind builds the search index:
+Once it is published, install the framework and its peer dependencies. Satori and resvg render the OG image, Pagefind builds the search index:
 
 ```sh
 npm install almanac satori @resvg/resvg-js pagefind

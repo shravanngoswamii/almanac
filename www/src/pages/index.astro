@@ -96,17 +96,17 @@ const structuredData = {
 
 	<section class="section">
 		<div class="section-header">
-			<h2>Start in one command.</h2>
-			<p>Scaffold a site, write Markdown, and the routes exist.</p>
+			<h2>Clone it and run it.</h2>
+			<p>Not on npm yet. The starter in the repository is a complete site, and this one is built from the same code.</p>
 		</div>
 		<div class="install-strip">
 			<div>
-				<strong>Scaffold and run</strong>
+				<strong>Run the starter</strong>
 				<span>You own two things: the config file and your content. The framework handles the rest.</span>
 			</div>
-			<pre><code>npm create almanac@latest my-docs
-cd my-docs
-npm run dev</code></pre>
+			<pre><code>git clone https://github.com/shravanngoswamii/almanac.git
+cd almanac &amp;&amp; pnpm install
+pnpm --filter starter dev</code></pre>
 			<a class="button secondary" href={withBase('/docs/start/installation/')}>Installation guide</a>
 		</div>
 	</section>
@@ -185,7 +185,7 @@ npm run dev</code></pre>
 						<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 					</svg>
 				</summary>
-				<p>It builds this site, so it works. It is also pre-1.0 with one maintainer, no docs versioning, and no i18n. Treat it as early software that is honest about being early.</p>
+				<p>It builds this site, so it works. It is also not on npm yet, pre-1.0, maintained by one person, and has no docs versioning or i18n. Clone the repository and run the starter if you want to try it. Treat it as early software that is honest about being early.</p>
 			</details>
 		</div>
 	</section>
