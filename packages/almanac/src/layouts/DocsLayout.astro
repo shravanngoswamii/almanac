@@ -6,7 +6,7 @@ import { siteConfig, config } from "../config";
 import { buildSidebar, docHref, flattenNav } from "../utils/sidebar";
 import { withBase } from "../lib/paths";
 
-const { frontmatter, headings, entryId } = Astro.props;
+const { frontmatter, headings, entryId, gitLastUpdated } = Astro.props;
 const title = frontmatter.title ?? "Docs";
 const description =
 	frontmatter.description ?? `${siteConfig.name} documentation.`;
@@ -30,7 +30,7 @@ const editUrl = (() => {
 const lastUpdated = (() => {
 	if (frontmatter.lastUpdated === false) return undefined;
 	if (frontmatter.lastUpdated instanceof Date) return frontmatter.lastUpdated;
-	return undefined;
+	return gitLastUpdated;
 })();
 const lastUpdatedLabel = lastUpdated
 	? new Intl.DateTimeFormat("en-US", {
