@@ -9,6 +9,12 @@ import HeartIcon from "../components/icons/HeartIcon.astro";
 import { withBase } from "../lib/paths";
 import { selectThemes, buildThemesCss } from "../utils/themes";
 
+interface HeadTag {
+	tag: string;
+	attrs: Record<string, string | boolean>;
+	content: string;
+}
+
 interface Props {
 	title?: string;
 	description?: string;
@@ -17,6 +23,7 @@ interface Props {
 	canonical?: string;
 	ogType?: "website" | "article";
 	structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+	head?: HeadTag[];
 }
 
 const {
@@ -27,6 +34,7 @@ const {
 	canonical,
 	ogType = "website",
 	structuredData,
+	head: pageHead = [],
 } = Astro.props;
 const pageTitle =
 	title === siteConfig.name ? siteConfig.name : `${title} | ${siteConfig.name}`;
@@ -109,14 +117,14 @@ const renderHeadTag = (tag: {
 		<meta name="twitter:image" content={ogImageUrl} />
 		<meta name="theme-color" content={siteConfig.themeColor.light} media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content={siteConfig.themeColor.dark} media="(prefers-color-scheme: dark)" />
-		<link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+		<link rel="icon" type="image/svg+xml" href={withBase(siteConfig.favicon)} />
 		<!-- Umami Analytics: set PUBLIC_UMAMI_WEBSITE_ID to enable, see src/config.ts -->
 		{siteConfig.umami.websiteId && (
 			<script defer src={siteConfig.umami.src} data-website-id={siteConfig.umami.websiteId}></script>
 		)}
 		{jsonLdItems.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)}></script>)}
 		{config.theme.customCss.map((href) => <link rel="stylesheet" href={href} />)}
-		{config.head.map((tag) => (
+		{[...config.head, ...pageHead].map((tag) => (
 			<Fragment set:html={renderHeadTag(tag)} />
 		))}
 		<title>{pageTitle}</title>
