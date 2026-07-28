@@ -2,30 +2,52 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import type { MystNode, MystPipeline, MystVFile } from "../myst/deps.ts";
-import { type PreambleOptions, preamble } from "./preamble.ts";
+import {
+	type BookTocOptions,
+	type DocumentMeta,
+	type StyleOptions,
+	preamble,
+} from "./preamble.ts";
 
 /**
- * Nodes that carry rendered HTML rather than document structure.
+ * Converts raw HTML nodes into something Typst can typeset.
  *
- * Executed output arrives as a raw `html` node, which Typst has no way to
- * interpret, so it is turned into a plain code block. The alternative is
- * dropping it, which would print a document whose examples have no results.
+ * Two kinds arrive here and they want opposite treatment. Executed output is
+ * program output, so it belongs in a monospace block. Everything else, a callout
+ * written as a `<div>` for instance, is prose, and setting prose in monospace
+ * makes a page look broken. Dropping either would print a document that
+ * disagrees with the page.
  */
 function htmlToTypstFriendly(tree: MystNode): void {
 	const visit = (node: MystNode) => {
 		if (!Array.isArray(node.children)) return;
-		node.children = node.children.map((child) => {
+		node.children = node.children.flatMap((child) => {
 			if (child.type === "html" && typeof child.value === "string") {
 				const text = stripTags(child.value);
-				return text
-					? { type: "code", lang: "text", value: text }
-					: { type: "paragraph", children: [] };
+				if (!text) return [];
+				if (isProgramOutput(child.value)) {
+					return [{ type: "code", lang: "text", value: text }];
+				}
+				return [
+					{
+						type: "blockquote",
+						children: text.split("\n").map((line) => ({
+							type: "paragraph",
+							children: [{ type: "text", value: line }],
+						})),
+					},
+				];
 			}
 			visit(child);
-			return child;
+			return [child];
 		});
 	};
 	visit(tree);
+}
+
+/** Output blocks carry the class the stylesheet targets. */
+export function isProgramOutput(html: string): boolean {
+	return /class="exec-(result|stream|artifact)/.test(html);
 }
 
 /** Text content of a fragment of HTML, with entities of ours decoded. */
@@ -43,8 +65,13 @@ export function stripTags(html: string): string {
 		.join("\n");
 }
 
-export interface ToTypstOptions extends PreambleOptions {
+export interface ToTypstOptions {
 	root: string;
+	meta: DocumentMeta;
+	style: StyleOptions;
+	toc?: BookTocOptions;
+	/** Typst source that replaces the built-in template. */
+	template?: string;
 	/** Directory the page's relative image paths are resolved against. */
 	sourceDir?: string;
 	onNote?: (message: string) => void;
@@ -158,7 +185,18 @@ export async function toTypst(
 	const commands = Object.values(file.result?.commands ?? {});
 	const definitions = [...macros, ...commands].join("\n");
 
-	return [preamble(options), definitions, "", body, ""].join("\n");
+	return [
+		preamble({
+			meta: options.meta,
+			style: options.style,
+			toc: options.toc,
+			...(options.template !== undefined ? { custom: options.template } : {}),
+		}),
+		definitions,
+		"",
+		body,
+		"",
+	].join("\n");
 }
 
 /**
