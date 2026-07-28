@@ -9,7 +9,12 @@ import {
 	execute,
 	isNodeLanguage,
 	nodeEngineId,
+	pythonAvailable,
+	pythonEngineId,
 	runNode,
+	runPython,
+	runnerFor,
+	supportedLanguages,
 	UnsupportedLanguageError,
 } from "../src/exec/index.ts";
 
@@ -242,12 +247,115 @@ describe("execute", () => {
 
 	it("refuses a language it has no runner for", async () => {
 		await assert.rejects(
-			() => execute({ code: "print(1)", language: "python" }, cache),
+			() => execute({ code: "SELECT 1", language: "sql" }, cache),
 			UnsupportedLanguageError,
 		);
 	});
 
+	it("names the languages it does run, so the message stays true", async () => {
+		let message = "";
+		try {
+			await execute({ code: "x", language: "sql" }, cache);
+		} catch (thrown) {
+			message = (thrown as Error).message;
+		}
+		assert.match(message, /js/);
+		assert.match(message, /python/);
+	});
+
 	it("names the engine so a runtime upgrade is visible in the key", () => {
 		assert.match(nodeEngineId(), /^node:\d+\./);
+	});
+});
+
+describe("runner registry", () => {
+	it("claims python and its alias", () => {
+		assert.equal(runnerFor("python")?.id, "pyodide");
+		assert.equal(runnerFor("py")?.id, "pyodide");
+	});
+
+	it("still claims javascript and typescript", () => {
+		assert.equal(runnerFor("js")?.id, "node");
+		assert.equal(runnerFor("ts")?.id, "node");
+	});
+
+	it("is case insensitive, since a fence may say Python", () => {
+		assert.equal(runnerFor("Python")?.id, "pyodide");
+	});
+
+	it("returns nothing for a language nobody claims", () => {
+		assert.equal(runnerFor("sql"), undefined);
+	});
+
+	it("reports the languages it can run", () => {
+		const languages = supportedLanguages();
+		assert.ok(languages.includes("python"));
+		assert.ok(languages.includes("ts"));
+	});
+});
+
+describe("runPython", () => {
+	const root = process.cwd();
+
+	it("runs real python and captures stdout", async () => {
+		const result = await runPython(
+			"import sys\nprint('py', sys.version_info.major)",
+			{ root },
+		);
+		assert.equal(result.error, undefined);
+		assert.match(result.stdout, /^py 3$/);
+	});
+
+	it("returns a traceback as data rather than throwing", async () => {
+		const result = await runPython("1 / 0", { root });
+		assert.match(result.error ?? "", /ZeroDivisionError/);
+	});
+
+	it("does not cache a traceback as transient, the code really is broken", async () => {
+		const result = await runPython("raise ValueError('nope')", { root });
+		assert.match(result.error ?? "", /ValueError/);
+		assert.notEqual(result.transient, true);
+	});
+
+	it("kills a runaway block and marks the timeout transient", async () => {
+		const result = await runPython("while True:\n    pass", {
+			root,
+			timeoutMs: 2000,
+		});
+		assert.match(result.error ?? "", /timed out after 2000ms/);
+		assert.equal(result.transient, true);
+	});
+
+	it("names pyodide in the engine id so an upgrade invalidates the cache", () => {
+		assert.match(pythonEngineId(root), /^pyodide-\d/);
+	});
+
+	it("reports the runtime as available when the peer is installed", async () => {
+		assert.equal(await pythonAvailable(root), true);
+	});
+});
+
+describe("transient results", () => {
+	it("are not written to the cache", async () => {
+		const dir = await mkdtemp(path.join(tmpdir(), "almanac-transient-"));
+		const transientCache = new ExecCache(dir);
+
+		// A timeout is the cheapest reliably transient failure to produce.
+		const first = await execute(
+			{ code: "while (true) {}", language: "js", run: { timeoutMs: 400 } },
+			transientCache,
+		);
+		assert.equal(first.transient, true);
+		assert.equal(first.cached, false);
+
+		const second = await execute(
+			{ code: "while (true) {}", language: "js", run: { timeoutMs: 400 } },
+			transientCache,
+		);
+		assert.equal(
+			second.cached,
+			false,
+			"a transient failure must not be served from the cache",
+		);
 	});
 });
