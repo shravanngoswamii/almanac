@@ -7,6 +7,11 @@ Almanac can typeset every docs page as a PDF during the build. Not a print
 stylesheet or a headless browser screenshot: a real typeset document, produced by
 [Typst](https://typst.app/) from the same tree the web page was rendered from.
 
+<div class="callout tip">
+This site has it on. Scroll to the bottom of any documentation page and the PDF
+link next to "Edit this page" gives you that page, typeset. <a href="../../guides/executable-code/">Executable code</a> is the interesting one: its PDF contains the same computed Python and R output the page shows.
+</div>
+
 That last part is the point. The PDF and the page cannot disagree, because
 there is one parse, one set of resolved cross references, and one set of executed
 results feeding both.
@@ -65,6 +70,10 @@ What survives into the document:
   correct, and losing the whole site because one document confused the typesetter
   is the wrong trade.
 - **Only docs pages.** Blog posts are not typeset.
+- **Only the default version and locale.** A variant page can share its source
+  file with the page it inherits from, so a variant PDF would silently be a copy
+  of another one. The link is hidden there rather than pointing at something
+  wrong.
 - **Styling is minimal and not yet configurable.** A4, serif body, monospace
   code, sensible margins. Templates are the obvious next step and are not built.
 

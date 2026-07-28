@@ -56,7 +56,7 @@ export default defineConfig({
 			blog: { enabled: true, path: "blog", base: "blog" },
 			theme: { default: "almanac-light" },
 			search: { provider: "pagefind" },
-			future: { execute: true },
+			future: { myst: true, execute: true, pdf: true },
 		}),
 	],
 });
