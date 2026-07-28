@@ -7,6 +7,7 @@ import { checkLinks, reportLinks } from "./build/links.ts";
 import type { AlmanacConfig, AlmanacUserConfig } from "./config/schema.ts";
 import { validateConfig } from "./config/schema.ts";
 import { remarkExec } from "./exec/remark.ts";
+import { mystProcessor } from "./myst/processor.ts";
 import { almanacVitePlugin } from "./vite/virtual-modules.ts";
 
 const PACKAGE_NAME = "almanac";
@@ -89,25 +90,51 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 				logger,
 			}) => {
 				const root = fileURLToPath(astroConfig.root);
-				const processor = config.future.execute
-					? await unifiedProcessorWith(
-							// Tuple form: unified calls the factory with these options to
-							// get the transformer. Passing the transformer itself would
-							// have unified invoke it with no tree.
-							[
-								remarkExec,
-								{
-									root,
-									onResult: (info: { cached: boolean; error?: string }) => {
-										if (info.error) execStats.failed += 1;
-										else if (info.cached) execStats.cached += 1;
-										else execStats.ran += 1;
-									},
-								},
-							],
+				const execCacheDir = path.join(root, ".almanac", "exec");
+
+				// MyST replaces the whole Markdown pipeline, so execution has to
+				// move inside it. Running both would parse every file twice and
+				// give remark's output to MyST's renderer.
+				const mystProc = config.future.myst
+					? mystProcessor({
 							root,
-						)
+							...(config.future.execute
+								? { exec: { cacheDir: execCacheDir } }
+								: {}),
+							onExecResult: (info: { cached: boolean; error?: string }) => {
+								if (info.error) execStats.failed += 1;
+								else if (info.cached) execStats.cached += 1;
+								else execStats.ran += 1;
+							},
+							onWarnings: (file, warnings) => {
+								for (const warning of warnings) {
+									logger.warn(`${file}: ${warning}`);
+								}
+							},
+						})
 					: undefined;
+
+				const processor = config.future.myst
+					? mystProc
+					: config.future.execute
+						? await unifiedProcessorWith(
+								// Tuple form: unified calls the factory with these options to
+								// get the transformer. Passing the transformer itself would
+								// have unified invoke it with no tree.
+								[
+									remarkExec,
+									{
+										root,
+										onResult: (info: { cached: boolean; error?: string }) => {
+											if (info.error) execStats.failed += 1;
+											else if (info.cached) execStats.cached += 1;
+											else execStats.ran += 1;
+										},
+									},
+								],
+								root,
+							)
+						: undefined;
 
 				updateConfig({
 					vite: {
