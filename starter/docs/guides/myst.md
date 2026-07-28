@@ -82,3 +82,18 @@ Ordinary Markdown is untouched: headings, lists, tables, links, images, and
 fenced code all parse the way they always did. Raw HTML still passes through.
 Turning `future.myst` off leaves every page on this site rendering, minus the
 directives and cross references above.
+
+## Python, in the same build
+
+`future.execute` is not JavaScript only. Python runs through Pyodide, in its own
+process, with the same cache:
+
+```{code-cell} python
+import math
+
+for n in (2, 3, 10):
+    print(f"sqrt({n}) = {math.sqrt(n):.4f}")
+```
+
+The runtime is an optional peer dependency, so install `pyodide` in projects that
+want it and leave it out of ones that do not.

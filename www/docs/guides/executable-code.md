@@ -1,6 +1,6 @@
 ---
 title: Executable code
-description: Run JavaScript and TypeScript blocks at build time and embed their output.
+description: Run JavaScript, TypeScript, and Python blocks at build time and embed their output.
 sidebar:
   order: 5
 ---
@@ -83,8 +83,52 @@ that depends on the runtime should not survive it.
 Commit the cache directory to make CI builds reproducible and fast, or leave it
 out of version control and let CI cache it.
 
+## Python
+
+Python runs too, through [Pyodide](https://pyodide.org/). It is an optional peer
+dependency, so install it only in projects that want it:
+
+```sh
+npm install pyodide
+```
+
+Then a `python` block behaves like any other:
+
+````md
+```python exec
+import statistics
+
+samples = [12, 15, 9, 22, 17]
+print("mean:  ", statistics.mean(samples))
+print("stdev: ", round(statistics.stdev(samples), 3))
+```
+````
+
+```python exec
+import statistics
+
+samples = [12, 15, 9, 22, 17]
+print("mean:  ", statistics.mean(samples))
+print("stdev: ", round(statistics.stdev(samples), 3))
+```
+
+The whole Python standard library is available. Third party packages are not
+installed for you yet, so `numpy` and friends need Pyodide's own package loading,
+which Almanac does not drive.
+
+Pyodide starts in about a second, and it starts once per block that actually
+runs. Cached blocks cost nothing, so this shows up on the first build and then
+mostly disappears.
+
+Python runs in its own process for the same reason JavaScript does, and it
+matters more here: a WASM runtime cannot be interrupted from the thread it runs
+on, so an infinite loop would hang the build rather than time out.
+
 ## What is not here yet
 
-Only JavaScript and TypeScript run today. Python via Pyodide, R via WebR, and
-real Jupyter kernels are planned. Blocks in a language without a runner render
-as ordinary code, so nothing breaks while you wait.
+R via WebR and real Jupyter kernels are not built. Blocks in a language without
+a runner render as ordinary highlighted code, so nothing breaks while you wait.
+
+Failures that are the environment's fault rather than the code's, a runtime that
+is not installed, a driver that dies, a timeout, are never cached. A Python
+traceback is cached, because the code really does raise it.
