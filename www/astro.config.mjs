@@ -21,6 +21,8 @@ export default defineConfig({
 				github: "https://github.com/shravanngoswamii/almanac",
 				sponsor: "https://github.com/sponsors/shravanngoswamii",
 			},
+			editUrl:
+				"https://github.com/shravanngoswamii/almanac/edit/main/www/{path}",
 			docs: {
 				enabled: true,
 				path: "docs",
