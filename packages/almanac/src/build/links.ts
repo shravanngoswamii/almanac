@@ -15,15 +15,15 @@ const HREF = /<a\b[^>]*?\bhref=["']([^"']+)["']/gi;
 const ID = /\bid=["']([^"']+)["']/gi;
 const NAME = /<a\b[^>]*?\bname=["']([^"']+)["']/gi;
 
-/** Every .html file under a directory, as absolute paths. */
-async function htmlFiles(dir: string): Promise<string[]> {
+/** Every file under a directory, as absolute paths. */
+async function allFiles(dir: string): Promise<string[]> {
 	const found: string[] = [];
 	const walk = async (current: string) => {
 		const entries = await readdir(current, { withFileTypes: true });
 		for (const entry of entries) {
 			const full = path.join(current, entry.name);
 			if (entry.isDirectory()) await walk(full);
-			else if (entry.name.endsWith(".html")) found.push(full);
+			else found.push(full);
 		}
 	};
 	await walk(dir);
@@ -43,9 +43,10 @@ function pathsFor(outDir: string, file: string): string[] {
 		forms.push(`/${dir}`, `/${dir}`.replace(/\/$/, ""));
 	} else if (rel === "index.html") {
 		forms.push("/", "");
-	} else {
+	} else if (rel.endsWith(".html")) {
 		forms.push(`/${rel.slice(0, -".html".length)}`);
 	}
+	// Anything else, a PDF or an archive, is reachable only at its real path.
 	return forms;
 }
 
@@ -68,13 +69,19 @@ export async function checkLinks(
 ): Promise<BrokenLink[]> {
 	if (!options.checkLinks && !options.checkAnchors) return [];
 
-	const files = await htmlFiles(outDir);
+	// Every emitted file can be a link target, but only HTML is scanned for
+	// links. A page may legitimately link to a PDF, a text file, or an archive,
+	// and reporting those as broken would train people to ignore the report.
+	const emitted = await allFiles(outDir);
+	const files = emitted.filter((file) => file.endsWith(".html"));
+
 	const contents = new Map<string, string>();
 	const pages = new Map<string, string>();
-	for (const file of files) {
-		const html = await readFile(file, "utf8");
-		contents.set(file, html);
+	for (const file of emitted) {
 		for (const form of pathsFor(outDir, file)) pages.set(form, file);
+	}
+	for (const file of files) {
+		contents.set(file, await readFile(file, "utf8"));
 	}
 
 	const base = options.base.replace(/\/$/, "");

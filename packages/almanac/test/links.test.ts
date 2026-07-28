@@ -87,6 +87,28 @@ describe("checkLinks", () => {
 		assert.deepEqual(hrefs, ["#missing", "/docs/guide/#ghost"].sort());
 	});
 
+	it("accepts a link to a non-html file that was emitted", async () => {
+		const withPdf = await mkdtemp(path.join(tmpdir(), "almanac-pdf-"));
+		await mkdir(path.join(withPdf, "pdf"), { recursive: true });
+		await writeFile(
+			path.join(withPdf, "index.html"),
+			page(
+				'<a href="/pdf/guide.pdf">download</a><a href="/pdf/gone.pdf">missing</a>',
+			),
+		);
+		await writeFile(path.join(withPdf, "pdf", "guide.pdf"), "%PDF-1.7");
+
+		const broken = await checkLinks(withPdf, {
+			base: "/",
+			checkLinks: true,
+			checkAnchors: false,
+		});
+		assert.deepEqual(
+			broken.map((entry) => entry.href),
+			["/pdf/gone.pdf"],
+		);
+	});
+
 	it("does no work when both checks are off", async () => {
 		const broken = await checkLinks(dir, {
 			base: "/",
