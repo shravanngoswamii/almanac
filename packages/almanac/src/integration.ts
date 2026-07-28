@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { AstroIntegration } from "astro";
+import { checkLinks, reportLinks } from "./build/links.ts";
 import type { AlmanacConfig, AlmanacUserConfig } from "./config/schema.ts";
 import { validateConfig } from "./config/schema.ts";
 import { remarkExec } from "./exec/remark.ts";
@@ -74,6 +75,9 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 
 	// Tallied across the whole build so the summary reports real numbers.
 	const execStats = { ran: 0, cached: 0, failed: 0 };
+
+	// Recorded in config:done, where the base is final, and read in build:done.
+	let resolvedBase = "/";
 
 	return {
 		name: PACKAGE_NAME,
@@ -184,15 +188,33 @@ export function almanac(userConfig: AlmanacUserConfig): AstroIntegration {
 				);
 			},
 
+			"astro:config:done": ({ config: astroConfig }) => {
+				resolvedBase = astroConfig.base;
+			},
 			"astro:build:done": async ({ dir, logger }) => {
+				const outDir = fileURLToPath(dir);
 				if (config.future.execute) {
 					const { ran, cached, failed } = execStats;
 					logger.info(
 						`executed ${ran} block${ran === 1 ? "" : "s"}, reused ${cached} from cache${failed ? `, ${failed} failed` : ""}`,
 					);
 				}
+				const checkingLinks = config.onBrokenLinks !== "ignore";
+				const checkingAnchors = config.onBrokenAnchors !== "ignore";
+				if (checkingLinks || checkingAnchors) {
+					const broken = await checkLinks(outDir, {
+						base: resolvedBase,
+						checkLinks: checkingLinks,
+						checkAnchors: checkingAnchors,
+					});
+					reportLinks(
+						broken,
+						{ links: config.onBrokenLinks, anchors: config.onBrokenAnchors },
+						logger,
+					);
+				}
+
 				if (config.search.provider !== "pagefind") return;
-				const outDir = fileURLToPath(dir);
 				logger.info("building the search index");
 				try {
 					await runPagefind(outDir);
