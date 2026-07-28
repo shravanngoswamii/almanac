@@ -2969,3 +2969,27 @@ pre.exec-artifact code {
 .exec-artifact-html :last-child {
 	margin-bottom: 0;
 }
+
+.docs-book {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	margin-top: 1.25rem;
+	padding: 0.5rem 0.7rem;
+	border: 1px solid var(--line);
+	border-radius: 6px;
+	color: var(--muted);
+	font-size: 0.8rem;
+	font-weight: 650;
+	text-decoration: none;
+}
+
+.docs-book:hover {
+	color: var(--accent-strong);
+	border-color: var(--accent-strong);
+}
+
+.docs-book svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}

@@ -154,6 +154,12 @@ const pdfHref =
 	config.future.pdf && entryId && variant.prefix === ""
 		? withBase(`/pdf/${entryId}.pdf`)
 		: undefined;
+
+// The whole collection as one document, when the book is enabled.
+const bookHref =
+	config.future.pdf && config.pdf.book.enabled
+		? withBase(`/pdf/${config.pdf.book.filename}`)
+		: undefined;
 const showPager =
 	!isSplash && config.docs.pager && Boolean(prevItem || nextItem);
 ---
@@ -185,6 +191,14 @@ const showPager =
 					</section>
 				))
 			}
+			{bookHref && (
+				<a class="docs-book" href={bookHref}>
+					<svg aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+					Whole docs as a book
+				</a>
+			)}
 		</aside>
 		)}
 		{!isSplash && (
