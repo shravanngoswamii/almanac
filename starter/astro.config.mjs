@@ -13,8 +13,16 @@ export default defineConfig({
 			},
 			// Omit `sidebar` and Almanac groups pages by directory instead.
 			docs: {
-				sidebar: [{ label: "Get started", items: ["index", "guides/writing"] }],
+				sidebar: [
+					{
+						label: "Get started",
+						items: ["index", "guides/writing", "guides/myst"],
+					},
+				],
 			},
+			// On here so every CI build exercises the MyST pipeline. Turn it off
+			// and the same content still renders, through remark instead.
+			future: { myst: true, execute: true },
 		}),
 	],
 });
