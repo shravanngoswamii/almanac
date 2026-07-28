@@ -1,5 +1,5 @@
 import path from "node:path";
-import { ExecCache } from "./cache.ts";
+import { type ExecArtifact, ExecCache } from "./cache.ts";
 import { execute, runnerFor, UnsupportedLanguageError } from "./index.ts";
 
 /** Minimal mdast shapes, declared locally to avoid a dependency on mdast types. */
@@ -25,6 +25,8 @@ export interface BlockDirective {
 	/** Hide the result and only run for its side effects. */
 	hideOutput: boolean;
 	timeoutMs?: number;
+	/** Kernel spec name; sends the block to a Jupyter server instead. */
+	kernel?: string;
 }
 
 /**
@@ -48,6 +50,11 @@ export function parseDirective(
 		else if (token.startsWith("timeout=")) {
 			const value = Number.parseInt(token.slice("timeout=".length), 10);
 			if (Number.isFinite(value) && value > 0) directive.timeoutMs = value;
+		} else if (token.startsWith("kernel=")) {
+			// Naming a kernel is what routes a block to a Jupyter server, so a
+			// plain `python exec` keeps running locally under Pyodide.
+			const value = token.slice("kernel=".length).trim();
+			if (value) directive.kernel = value;
 		}
 	}
 	return directive;
@@ -67,6 +74,30 @@ interface RenderInput {
 	error?: string;
 	durationMs: number;
 	cached: boolean;
+	artifacts?: ExecArtifact[];
+}
+
+/**
+ * Renders one artifact.
+ *
+ * `html` is emitted as-is because a kernel that returns HTML is returning
+ * markup on purpose; that is the same trust already extended to raw HTML in
+ * Markdown. Everything else is either base64 or escaped.
+ */
+function renderArtifact(artifact: ExecArtifact): string {
+	const label = artifact.label ? ` title="${escapeHtml(artifact.label)}"` : "";
+	switch (artifact.kind) {
+		case "png":
+			return `<img class="exec-artifact" alt="${escapeHtml(artifact.label ?? "Output image")}" src="data:image/png;base64,${artifact.data.replace(/\s+/g, "")}"${label} />`;
+		case "svg":
+			return `<div class="exec-artifact exec-artifact-svg"${label}>${artifact.data}</div>`;
+		case "html":
+			return `<div class="exec-artifact exec-artifact-html"${label}>${artifact.data}</div>`;
+		case "json":
+			return `<pre class="exec-artifact exec-artifact-json"><code>${escapeHtml(artifact.data)}</code></pre>`;
+		default:
+			return `<pre class="exec-artifact"><code>${escapeHtml(artifact.data)}</code></pre>`;
+	}
 }
 
 /** Renders one result as a block the stylesheet can target. */
@@ -81,6 +112,9 @@ export function renderOutput(result: RenderInput): string {
 		parts.push(
 			`<pre class="exec-stream exec-stderr"><code>${escapeHtml(result.stderr)}</code></pre>`,
 		);
+	}
+	for (const artifact of result.artifacts ?? []) {
+		parts.push(renderArtifact(artifact));
 	}
 	if (result.error) {
 		parts.push(`<p class="exec-error">${escapeHtml(result.error)}</p>`);
@@ -159,6 +193,7 @@ export function remarkExec(options: RemarkExecOptions) {
 					{
 						code: target.node.value,
 						language,
+						...(directive.kernel ? { kernel: directive.kernel } : {}),
 						run: {
 							timeoutMs: directive.timeoutMs ?? options.timeoutMs,
 							// Runtimes like Pyodide are optional peers of the project, so

@@ -109,6 +109,9 @@ export async function executeMystBlocks(
 				{
 					code: target.node.value as string,
 					language: target.language,
+					...(target.directive.kernel
+						? { kernel: target.directive.kernel }
+						: {}),
 					run: {
 						timeoutMs: target.directive.timeoutMs ?? options.timeoutMs,
 						root: options.root,
