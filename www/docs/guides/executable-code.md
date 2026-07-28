@@ -1,6 +1,6 @@
 ---
 title: Executable code
-description: Run JavaScript, TypeScript, and Python blocks at build time and embed their output.
+description: Run JavaScript, TypeScript, Python, and R blocks at build time and embed their output.
 sidebar:
   order: 5
 ---
@@ -124,10 +124,35 @@ Python runs in its own process for the same reason JavaScript does, and it
 matters more here: a WASM runtime cannot be interrupted from the thread it runs
 on, so an infinite loop would hang the build rather than time out.
 
+## R
+
+R runs through [WebR](https://docs.r-wasm.org/webr/latest/), also an optional
+peer:
+
+```sh
+npm install webr
+```
+
+```r exec
+samples <- c(12, 15, 9, 22, 17)
+cat("mean: ", mean(samples), "\n")
+cat("sd:   ", round(sd(samples), 3), "\n")
+print(summary(samples))
+```
+
+Autoprint works the way it does in an R console, so a bare expression prints its
+value. Warnings appear as warnings and do not fail the block; a `stop()` is
+reported as an error.
+
+WebR starts faster than Pyodide, around half a second. Installing R packages
+from a repository is not wired up, so the base R distribution is what you get.
+
 ## What is not here yet
 
-R via WebR and real Jupyter kernels are not built. Blocks in a language without
-a runner render as ordinary highlighted code, so nothing breaks while you wait.
+Real Jupyter kernels are not built: connecting to one means talking to a running
+server over its messaging protocol, which is a different execution model from
+spawning a runtime locally. Blocks in a language without a runner render as
+ordinary highlighted code, so nothing breaks while you wait.
 
 Failures that are the environment's fault rather than the code's, a runtime that
 is not installed, a driver that dies, a timeout, are never cached. A Python

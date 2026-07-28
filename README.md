@@ -5,8 +5,8 @@ executable content from one source.
 
 > Early days, and not on npm yet. Docs, blog, theming, search, link checking,
 > MyST parsing, PDF output, docs versioning, translations, and build-time
-> execution of JavaScript, TypeScript, and Python all work, and are dogfooded by
-> this repository's own site and starter. R and Jupyter kernels are not built.
+> execution of JavaScript, TypeScript, Python, and R all work, and are dogfooded by
+> this repository's own site and starter. Jupyter kernels are not built.
 
 ## Quick start
 
@@ -161,12 +161,11 @@ and next paging, scroll-spy table of contents, Pagefind search, a blog with tags
 RSS, hero images and reading time, 42 themes, build-time OG images, component
 overrides, a build-time link and anchor checker, MyST parsing with cross
 references and numbered figures, PDF output through Typst, docs versioning and
-translations that inherit rather than copy, and JavaScript, TypeScript, and
-Python blocks that execute during the build with their output embedded and
+translations that inherit rather than copy, and JavaScript, TypeScript,
+Python, and R blocks that execute during the build with their output embedded and
 cached.
 
-Not built yet: R through WebR, Jupyter kernels, rich execution output beyond
-text, citations and bibliographies, and PDF templates.
+Not built yet: Jupyter kernels, rich execution output beyond text, citations and bibliographies, and PDF templates.
 
 ## Development
 

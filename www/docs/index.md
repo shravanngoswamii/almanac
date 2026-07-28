@@ -25,14 +25,14 @@ This site is built with Almanac, so what you are reading is the framework render
 
 These are built and off by default, because each one is a bigger commitment than rendering Markdown:
 
-- **[Executable code blocks](guides/executable-code/).** Run JavaScript, TypeScript, and Python during the build and embed the real output, cached on the code, the language, and the runtime version. Behind `future.execute`.
+- **[Executable code blocks](guides/executable-code/).** Run JavaScript, TypeScript, Python, and R during the build and embed the real output, cached on the code, the language, and the runtime version. Behind `future.execute`.
 - **[MyST parsing](guides/myst/).** Cross references that write their own text, numbered figures, directives, and roles. Behind `future.myst`.
 - **[PDF output](guides/pdf/).** Every docs page typeset by Typst from the same tree the web page came from, executed output included. Behind `future.pdf`.
 - **[Versions and translations](guides/versions-and-locales/).** Both inherit unchanged pages instead of copying them, and build in a single pass.
 
 ## What is still missing
 
-- **R and Jupyter kernels.** Only JavaScript, TypeScript, and Python execute. A language without a runner renders as ordinary highlighted code.
+- **Jupyter kernels.** Connecting to a running kernel is a different execution model from spawning a runtime locally, and is not built. A language without a runner renders as ordinary highlighted code.
 - **Rich execution output.** Text only, though the artifact type already allows images, SVG, HTML, and JSON.
 - **Citations and bibliographies.** `{cite}` parses but there is no bibliography renderer.
 - **PDF templates.** The typeset output is not yet configurable.
