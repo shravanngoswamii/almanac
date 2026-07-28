@@ -1,6 +1,6 @@
 {
 	"name": "almanac",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"type": "module",
 	"description": "A publishing framework for technical and scientific writing: docs, blog, and executable content from one source.",
 	"license": "MIT",
@@ -123,5 +123,8 @@
 		"webr": {
 			"optional": true
 		}
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
