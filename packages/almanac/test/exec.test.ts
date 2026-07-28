@@ -5,9 +5,13 @@ import path from "node:path";
 import { after, before, describe, it } from "node:test";
 import { ExecCache } from "../src/exec/cache.ts";
 import { cacheKey } from "../src/exec/key.ts";
+import { parseDirective, renderOutput } from "../src/exec/remark.ts";
 import {
 	execute,
 	isNodeLanguage,
+	jupyterAvailable,
+	jupyterServer,
+	stripAnsi,
 	rAvailable,
 	rEngineId,
 	runR,
@@ -406,5 +410,106 @@ describe("runR", () => {
 
 	it("reports the runtime as available when the peer is installed", () => {
 		assert.equal(rAvailable(root), true);
+	});
+});
+
+describe("renderOutput artifacts", () => {
+	const base = { stdout: "", stderr: "", durationMs: 1, cached: false };
+
+	it("embeds a png as a data uri", () => {
+		const html = renderOutput({
+			...base,
+			artifacts: [{ kind: "png", data: "AAAB" }],
+		});
+		assert.match(
+			html,
+			/<img class="exec-artifact"[^>]*src="data:image\/png;base64,AAAB"/,
+		);
+	});
+
+	it("strips whitespace a kernel may wrap base64 with", () => {
+		const html = renderOutput({
+			...base,
+			artifacts: [{ kind: "png", data: "AA\nAB\n" }],
+		});
+		assert.match(html, /base64,AAAB"/);
+	});
+
+	it("inlines svg and html, which are markup on purpose", () => {
+		const svg = renderOutput({
+			...base,
+			artifacts: [{ kind: "svg", data: "<svg><rect /></svg>" }],
+		});
+		assert.match(svg, /<svg><rect \/><\/svg>/);
+
+		const html = renderOutput({
+			...base,
+			artifacts: [{ kind: "html", data: "<table><tr><td>1</td></tr></table>" }],
+		});
+		assert.match(html, /<table>/);
+	});
+
+	it("escapes json rather than trusting it", () => {
+		const html = renderOutput({
+			...base,
+			artifacts: [{ kind: "json", data: '{"a":"<b>"}' }],
+		});
+		assert.match(html, /&quot;&lt;b&gt;&quot;/);
+	});
+
+	it("does not say there was no output when there was an artifact", () => {
+		const html = renderOutput({
+			...base,
+			artifacts: [{ kind: "png", data: "AAAB" }],
+		});
+		assert.doesNotMatch(html, /No output/);
+	});
+
+	it("still says no output when there is genuinely none", () => {
+		assert.match(renderOutput(base), /No output/);
+	});
+
+	it("uses the label as alt text so an image is not unlabelled", () => {
+		const html = renderOutput({
+			...base,
+			artifacts: [{ kind: "png", data: "AAAB", label: "A chart" }],
+		});
+		assert.match(html, /alt="A chart"/);
+	});
+});
+
+describe("parseDirective kernel", () => {
+	it("reads a kernel name", () => {
+		assert.equal(parseDirective("exec kernel=python3").kernel, "python3");
+	});
+
+	it("leaves kernel unset for an ordinary block", () => {
+		assert.equal(parseDirective("exec").kernel, undefined);
+	});
+
+	it("ignores an empty kernel name", () => {
+		assert.equal(parseDirective("exec kernel=").kernel, undefined);
+	});
+});
+
+describe("stripAnsi", () => {
+	it("removes the colour codes a traceback arrives with", () => {
+		const coloured = `\u001b[0;31mValueError\u001b[0m: boom`;
+		assert.equal(stripAnsi(coloured), "ValueError: boom");
+	});
+});
+
+describe("jupyterServer", () => {
+	it("reads the url and token from the environment, not the config file", () => {
+		const server = jupyterServer({
+			ALMANAC_JUPYTER_URL: "http://localhost:8888",
+			ALMANAC_JUPYTER_TOKEN: "secret",
+		} as NodeJS.ProcessEnv);
+		assert.equal(server.url, "http://localhost:8888");
+		assert.equal(server.token, "secret");
+	});
+
+	it("reports unavailable with no url", () => {
+		assert.equal(jupyterAvailable({} as NodeJS.ProcessEnv), false);
 	});
 });
