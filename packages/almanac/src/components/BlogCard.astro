@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
+import { config } from "../config";
 import { withBase } from "../lib/paths";
 import { slugifyTag } from "../utils/slug";
 
@@ -76,7 +77,9 @@ const [eyebrow] = tags ?? [];
 		<p class="blog-card-description">{description}</p>
 		<div class="blog-card-meta">
 			<time datetime={pubDate.toISOString()}>{dateFormatter.format(pubDate)}</time>
-			<span class="blog-card-reading-time">{readingMinutes} min read</span>
+			{config.blog.readingTime && (
+				<span class="blog-card-reading-time">{readingMinutes} min read</span>
+			)}
 			<span class="blog-card-cta" aria-hidden="true">
 				Read post
 				<svg viewBox="0 0 24 24">

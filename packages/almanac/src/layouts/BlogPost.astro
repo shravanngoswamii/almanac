@@ -49,7 +49,7 @@ const {
 	nextPost,
 	relatedPosts = [],
 } = Astro.props;
-const { title, description, pubDate, updatedDate, tags, heroImage } =
+const { title, description, pubDate, updatedDate, tags, heroImage, head } =
 	frontmatter;
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -72,7 +72,7 @@ const tocHeadings = headings.filter(
 const hasToc = tocHeadings.length > 0;
 ---
 
-<BaseLayout title={title} description={description} bodyClass="blog-page" ogType="article">
+<BaseLayout title={title} description={description} bodyClass="blog-page" ogType="article" head={head}>
 	<article class="blog-post">
 		<a class="blog-back" href={withBase(docHref(config.blog.base, "index"))}>
 			<svg aria-hidden="true" viewBox="0 0 24 24">
@@ -109,7 +109,9 @@ const hasToc = tocHeadings.length > 0;
 								Updated <time datetime={updatedDate.toISOString()}>{dateFormatter.format(updatedDate)}</time>
 							</span>
 						)}
-						<span class="blog-reading-time">{readingTime.minutes} min read</span>
+						{config.blog.readingTime && (
+							<span class="blog-reading-time">{readingTime.minutes} min read</span>
+						)}
 						{tags && tags.length > 0 && (
 							<ul class="blog-tags">
 								{tags.map((tag) => (
