@@ -113,6 +113,11 @@ const nextItem = resolvePager(
 		: undefined,
 );
 const isSplash = frontmatter.template === "splash";
+
+// Written into `dist/pdf/<id>.pdf` after the build, so the link is predictable
+// from the entry id alone.
+const pdfHref =
+	config.future.pdf && entryId ? withBase(`/pdf/${entryId}.pdf`) : undefined;
 const showPager =
 	!isSplash && config.docs.pager && Boolean(prevItem || nextItem);
 ---
@@ -181,10 +186,18 @@ const showPager =
 			<div class="prose">
 				<slot />
 			</div>
-			{(editUrl || lastUpdatedLabel) && (
+			{(editUrl || lastUpdatedLabel || pdfHref) && (
 				<div class="docs-meta" data-pagefind-ignore>
 					{lastUpdatedLabel && (
 						<span class="docs-updated">Last updated {lastUpdatedLabel}</span>
+					)}
+					{pdfHref && (
+						<a class="docs-pdf" href={pdfHref}>
+							<svg aria-hidden="true" viewBox="0 0 24 24">
+								<path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							PDF
+						</a>
 					)}
 					{editUrl && (
 						<a class="docs-edit" href={editUrl} target="_blank">

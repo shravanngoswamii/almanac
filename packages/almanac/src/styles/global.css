@@ -2874,3 +2874,26 @@ html[data-mode="dark"] .logo-image-dark {
 	width: 0.95rem;
 	height: 0.95rem;
 }
+
+.docs-pdf {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-left: auto;
+	color: var(--muted);
+	font-weight: 650;
+	text-decoration: none;
+}
+
+.docs-pdf:hover {
+	color: var(--accent-strong);
+}
+
+.docs-pdf svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.docs-pdf + .docs-edit {
+	margin-left: 1rem;
+}
