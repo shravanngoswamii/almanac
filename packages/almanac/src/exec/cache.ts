@@ -13,6 +13,14 @@ export interface ExecOutput {
 	durationMs: number;
 	/** Structured results a runner chose to emit, such as a figure or table. */
 	artifacts?: ExecArtifact[];
+	/**
+	 * Set when the failure is the environment's fault rather than the code's: a
+	 * runtime that is not installed, a driver that died, a timeout that a loaded
+	 * machine may not repeat. These are never cached, because caching one would
+	 * bake a temporary problem into the build until someone thought to clear the
+	 * cache directory.
+	 */
+	transient?: boolean;
 }
 
 export interface ExecArtifact {

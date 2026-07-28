@@ -75,6 +75,7 @@ export async function renderMyst(
 			cache: options.exec.cache,
 			source,
 			timeoutMs: options.exec.timeoutMs,
+			root: options.root,
 			onResult: options.exec.onResult,
 		});
 	}

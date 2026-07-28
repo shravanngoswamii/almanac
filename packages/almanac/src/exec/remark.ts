@@ -1,6 +1,6 @@
 import path from "node:path";
 import { ExecCache } from "./cache.ts";
-import { execute, isNodeLanguage, UnsupportedLanguageError } from "./index.ts";
+import { execute, runnerFor, UnsupportedLanguageError } from "./index.ts";
 
 /** Minimal mdast shapes, declared locally to avoid a dependency on mdast types. */
 interface CodeNode {
@@ -149,7 +149,9 @@ export function remarkExec(options: RemarkExecOptions) {
 		for (const target of targets.reverse()) {
 			const directive = parseDirective(target.node.meta);
 			const language = target.node.lang ?? "";
-			if (!isNodeLanguage(language)) continue;
+			// Asking the registry rather than one runner: a block in a language
+			// nobody can run stays an ordinary highlighted block.
+			if (!runnerFor(language)) continue;
 
 			let rendered: string;
 			try {
@@ -157,7 +159,12 @@ export function remarkExec(options: RemarkExecOptions) {
 					{
 						code: target.node.value,
 						language,
-						run: { timeoutMs: directive.timeoutMs ?? options.timeoutMs },
+						run: {
+							timeoutMs: directive.timeoutMs ?? options.timeoutMs,
+							// Runtimes like Pyodide are optional peers of the project, so
+							// the runner needs its root to resolve them.
+							root: options.root,
+						},
 					},
 					cache,
 				);

@@ -8,6 +8,8 @@ export interface MystExecOptions {
 	/** The original Markdown, needed to recover fence info strings. */
 	source: string;
 	timeoutMs?: number;
+	/** Project root, so runners can resolve optional runtime packages. */
+	root?: string;
 	onResult?: (info: {
 		language: string;
 		cached: boolean;
@@ -107,7 +109,10 @@ export async function executeMystBlocks(
 				{
 					code: target.node.value as string,
 					language: target.language,
-					run: { timeoutMs: target.directive.timeoutMs ?? options.timeoutMs },
+					run: {
+						timeoutMs: target.directive.timeoutMs ?? options.timeoutMs,
+						root: options.root,
+					},
 				},
 				options.cache,
 			);
