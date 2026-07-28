@@ -56,6 +56,14 @@ export default defineConfig({
 			blog: { enabled: true, path: "blog", base: "blog" },
 			theme: { default: "almanac-light" },
 			search: { provider: "pagefind" },
+			pdf: {
+				book: {
+					enabled: true,
+					filename: "almanac-handbook.pdf",
+					subtitle: "The complete documentation, as one book",
+					toc: { depth: 3 },
+				},
+			},
 			future: { myst: true, execute: true, pdf: true },
 		}),
 	],

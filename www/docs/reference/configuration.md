@@ -84,6 +84,15 @@ See [Theming](../../guides/theming/) for the full list of theme ids.
 | `versions` | array | `[]` | Older documentation versions, newest first. Each takes `name`, optional `label`, optional `path`. See [Versions and translations](../../guides/versions-and-locales/) |
 | `i18n.defaultLocale` | string | `"en"` | The locale served without a URL prefix |
 | `i18n.locales` | array | `[]` | Each takes `code`, optional `label`, optional `dir`, optional `path` |
+| `pdf.perPage` | boolean | `true` | Emit one PDF per docs page |
+| `pdf.template` | string | none | Typst template replacing the built-in page styling. See [PDF output](../../guides/pdf/) |
+| `pdf.paper` / `margin` / `bodyFont` / `monoFont` / `bodySize` / `accent` / `numberHeadings` | various | Typst defaults | Structured styling, for when a full template is more than you need |
+| `pdf.book.enabled` | boolean | `false` | One PDF of every page, with a cover and a clickable table of contents |
+| `pdf.book.filename` | string | `"book.pdf"` | Output name inside the pdf directory |
+| `pdf.book.title` / `subtitle` | string | site title / tagline | Cover text |
+| `pdf.book.toc.enabled` / `title` / `depth` | boolean / string / 1-6 | `true` / `"Contents"` / `2` | The outline |
+| `pdf.book.template` | string | none | Typst template for the book, cover and outline included |
+| `pdf.book.order` | string[] | sidebar order | Chapter order by page id |
 | `onBrokenAnchors` | same | `"warn"` | Same, for `#fragment` targets that no element on the destination page carries |
 | `future.myst` | boolean | `false` | Parse through a MyST AST: cross references, numbered figures, directives, roles. See [MyST syntax](../../guides/myst/) |
 | `future.execute` | boolean | `false` | Run fenced blocks marked `exec` and embed their output. See [Executable code](../../guides/executable-code/) |

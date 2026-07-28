@@ -27,7 +27,7 @@ These are built and off by default, because each one is a bigger commitment than
 
 - **[Executable code blocks](guides/executable-code/).** Run JavaScript, TypeScript, Python, and R during the build and embed the real output, cached on the code, the language, and the runtime version. Behind `future.execute`.
 - **[MyST parsing](guides/myst/).** Cross references that write their own text, numbered figures, directives, and roles. Behind `future.myst`.
-- **[PDF output](guides/pdf/).** Every docs page typeset by Typst from the same tree the web page came from, executed output included. Behind `future.pdf`.
+- **[PDF output](guides/pdf/).** Every docs page typeset by Typst from the same tree the web page came from, executed output included, plus the whole thing as one book with a cover and a clickable table of contents. Styling is yours, down to a full Typst template. Behind `future.pdf`.
 - **[Versions and translations](guides/versions-and-locales/).** Both inherit unchanged pages instead of copying them, and build in a single pass.
 
 ## What is still missing
@@ -35,7 +35,6 @@ These are built and off by default, because each one is a bigger commitment than
 - **Installing packages into a runtime.** Pyodide gets the Python standard library and WebR gets base R. Anything beyond that needs a [Jupyter kernel](guides/executable-code/) with the packages already installed.
 - **Rich output from the local runtimes.** A Jupyter kernel's images, SVG, HTML, and JSON are rendered; Pyodide and WebR emit text only.
 - **Citations and bibliographies.** `{cite}` parses but there is no bibliography renderer.
-- **PDF templates.** The typeset output is not yet configurable.
 
 ## Where the pieces live
 
