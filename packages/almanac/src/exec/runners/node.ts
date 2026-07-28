@@ -4,15 +4,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import type { ExecOutput } from "../cache.ts";
+import type { RunOptions, Runner } from "./registry.ts";
 
-export interface RunOptions {
-	/** Milliseconds before the block is killed. */
-	timeoutMs?: number;
-	/** Working directory for the block, so relative imports resolve. */
-	cwd?: string;
-	/** Extra environment for the child. */
-	env?: Record<string, string>;
-}
+export type { RunOptions };
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 
@@ -93,7 +87,7 @@ export async function runNode(
 					.split(dir)
 					.join("/almanac");
 
-			const finish = (error?: string) => {
+			const finish = (error?: string, transient?: boolean) => {
 				if (settled) return;
 				settled = true;
 				clearTimeout(timer);
@@ -101,13 +95,16 @@ export async function runNode(
 					stdout: scrub(stdout.trimEnd()),
 					stderr: scrub(stderr.trimEnd()),
 					...(error ? { error: scrub(error) } : {}),
+					...(transient ? { transient: true } : {}),
 					durationMs: Math.round(performance.now() - started),
 				});
 			};
 
-			child.on("error", (error) => finish(error.message));
+			// Spawn failures say nothing about the code, so they are not cached.
+			child.on("error", (error) => finish(error.message, true));
 			child.on("close", (exitCode) => {
-				if (timedOut) return finish(`timed out after ${timeoutMs}ms`);
+				// A timeout on a loaded machine may not repeat, so it is not cached.
+				if (timedOut) return finish(`timed out after ${timeoutMs}ms`, true);
 				if (exitCode !== 0) return finish(`exited with code ${exitCode}`);
 				finish();
 			});
@@ -116,3 +113,10 @@ export async function runNode(
 		await rm(dir, { recursive: true, force: true });
 	}
 }
+
+export const nodeRunner: Runner = {
+	id: "node",
+	languages: NODE_LANGUAGES,
+	engineId: () => nodeEngineId(),
+	run: runNode,
+};

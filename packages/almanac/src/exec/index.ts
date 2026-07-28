@@ -1,15 +1,36 @@
 import type { ExecCache, ExecOutput } from "./cache.ts";
 import type { CacheKeyInput } from "./key.ts";
+import { nodeRunner } from "./runners/node.ts";
+import { pythonRunner } from "./runners/python.ts";
 import {
-	isNodeLanguage,
-	nodeEngineId,
+	registerRunner,
 	type RunOptions,
-	runNode,
-} from "./runners/node.ts";
+	runnerFor,
+	supportedLanguages,
+} from "./runners/registry.ts";
 
 export { type ExecArtifact, ExecCache, type ExecOutput } from "./cache.ts";
 export { CACHE_VERSION, type CacheKeyInput, cacheKey } from "./key.ts";
 export { isNodeLanguage, nodeEngineId, runNode } from "./runners/node.ts";
+export {
+	PYTHON_LANGUAGES,
+	pythonAvailable,
+	pythonEngineId,
+	runPython,
+} from "./runners/python.ts";
+export {
+	clearRunners,
+	registerRunner,
+	type Runner,
+	type RunOptions,
+	runnerFor,
+	supportedLanguages,
+} from "./runners/registry.ts";
+
+// Registered at import time so the set of languages is the same everywhere,
+// including in the config validation that reports what a project can run.
+registerRunner(nodeRunner);
+registerRunner(pythonRunner);
 
 export interface ExecuteRequest {
 	code: string;
@@ -32,7 +53,7 @@ export class UnsupportedLanguageError extends Error {
 
 	constructor(language: string) {
 		super(
-			`no runner for "${language}". Almanac currently executes JavaScript and TypeScript; Python and R are planned.`,
+			`no runner for "${language}". Almanac executes ${supportedLanguages().join(", ")}.`,
 		);
 		this.name = "UnsupportedLanguageError";
 		this.language = language;
@@ -49,12 +70,13 @@ export async function execute(
 	cache: ExecCache,
 ): Promise<ExecuteResult> {
 	const language = request.language.toLowerCase();
-	if (!isNodeLanguage(language)) throw new UnsupportedLanguageError(language);
+	const runner = runnerFor(language);
+	if (!runner) throw new UnsupportedLanguageError(language);
 
 	const key: CacheKeyInput = {
 		code: request.code,
 		language,
-		engine: nodeEngineId(),
+		engine: await runner.engineId(request.run),
 		dependencies: request.dependencies,
 		options: request.run?.timeoutMs
 			? { timeoutMs: request.run.timeoutMs }
@@ -66,7 +88,7 @@ export async function execute(
 		if (hit) return { ...hit, cached: true, language };
 	}
 
-	const output = await runNode(request.code, language, request.run);
-	await cache.set(key, output);
+	const output = await runner.run(request.code, language, request.run);
+	if (!output.transient) await cache.set(key, output);
 	return { ...output, cached: false, language };
 }
