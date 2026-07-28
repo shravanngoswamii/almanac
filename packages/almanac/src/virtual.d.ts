@@ -34,4 +34,5 @@ declare module "virtual:almanac/components" {
 	export const ShareLinks: AstroComponent;
 	export const SocialLinks: AstroComponent;
 	export const TableOfContents: AstroComponent;
+	export const VariantPicker: AstroComponent;
 }

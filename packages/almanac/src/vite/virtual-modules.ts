@@ -15,6 +15,7 @@ export const OVERRIDABLE = [
 	"ShareLinks",
 	"SocialLinks",
 	"TableOfContents",
+	"VariantPicker",
 ] as const;
 
 export type OverridableComponent = (typeof OVERRIDABLE)[number];

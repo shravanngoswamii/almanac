@@ -2897,3 +2897,47 @@ html[data-mode="dark"] .logo-image-dark {
 .docs-pdf + .docs-edit {
 	margin-left: 1rem;
 }
+
+.variant-picker {
+	display: grid;
+	gap: 0.5rem;
+	margin: 0.75rem 0 1.1rem;
+}
+
+.variant-field {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.4rem 0.6rem;
+	border: 1px solid var(--line);
+	border-radius: 6px;
+	background: var(--surface);
+	font-size: 0.78rem;
+}
+
+.variant-label {
+	color: var(--muted);
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	font-size: 0.64rem;
+	font-weight: 700;
+}
+
+.variant-current {
+	font-weight: 650;
+}
+
+.variant-select {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.variant-field:hover {
+	border-color: var(--accent-strong);
+}

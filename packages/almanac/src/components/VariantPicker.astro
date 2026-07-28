@@ -1,0 +1,116 @@
+---
+import { config } from "../config";
+import { withBase } from "../lib/paths";
+import { docHref } from "../utils/sidebar";
+import { scopedBase } from "../content/variants";
+
+interface Props {
+	/** Entry id with its variant prefix already removed. */
+	pageId: string;
+	currentVersion?: string;
+	currentLocale?: string;
+	/** Ids that exist, so the picker never offers a page that is not there. */
+	available: Set<string>;
+}
+
+const { pageId, currentVersion, currentLocale, available } = Astro.props;
+
+const defaultLocale = config.i18n.defaultLocale;
+const locales = config.i18n.locales;
+const versions = config.versions;
+
+/**
+ * Where a switch should land.
+ *
+ * The same page in the target variant when it exists, and that variant's home
+ * page when it does not. Sending a reader to a 404 is worse than sending them
+ * one level up.
+ */
+function targetFor(version?: string, locale?: string): string {
+	const parts = [
+		locale && locale !== defaultLocale ? locale : "",
+		version ?? "",
+	].filter(Boolean);
+	const prefix = parts.join("/");
+	const candidate = prefix ? `${prefix}/${pageId}` : pageId;
+	const base = scopedBase(config.docs.base, prefix);
+	return available.has(candidate)
+		? docHref(config.docs.base, candidate)
+		: docHref(base, "index");
+}
+
+const showVersions = versions.length > 0;
+const showLocales = locales.length > 1;
+const currentVersionLabel = currentVersion
+	? (versions.find((entry) => entry.name === currentVersion)?.label ??
+		currentVersion)
+	: "Current";
+const currentLocaleLabel =
+	locales.find((entry) => entry.code === (currentLocale ?? defaultLocale))
+		?.label ??
+	currentLocale ??
+	defaultLocale;
+---
+
+{(showVersions || showLocales) && (
+	<div class="variant-picker" data-pagefind-ignore>
+		{showVersions && (
+			<label class="variant-field">
+				<span class="variant-label">Version</span>
+				<select
+					class="variant-select"
+					data-variant-select
+					aria-label="Documentation version"
+				>
+					<option value={targetFor(undefined, currentLocale)} selected={!currentVersion}>
+						Current
+					</option>
+					{versions.map((entry) => (
+						<option
+							value={targetFor(entry.name, currentLocale)}
+							selected={entry.name === currentVersion}
+						>
+							{entry.label ?? entry.name}
+						</option>
+					))}
+				</select>
+				<span class="variant-current">{currentVersionLabel}</span>
+			</label>
+		)}
+
+		{showLocales && (
+			<label class="variant-field">
+				<span class="variant-label">Language</span>
+				<select
+					class="variant-select"
+					data-variant-select
+					aria-label="Documentation language"
+				>
+					{locales.map((entry) => (
+						<option
+							value={targetFor(currentVersion, entry.code)}
+							selected={entry.code === (currentLocale ?? defaultLocale)}
+						>
+							{entry.label ?? entry.code}
+						</option>
+					))}
+				</select>
+				<span class="variant-current">{currentLocaleLabel}</span>
+			</label>
+		)}
+	</div>
+)}
+
+<script is:inline data-astro-rerun define:vars={{ basePath: withBase("/") }}>
+	for (const select of document.querySelectorAll("[data-variant-select]")) {
+		select.addEventListener("change", (event) => {
+			const value = event.target.value;
+			if (!value) return;
+			// The option values are site paths already, so the base is only
+			// prepended when it is missing.
+			window.location.pathname = value.startsWith(basePath)
+				? value
+				: `${basePath.replace(/\/$/, "")}${value}`;
+		});
+	}
+</script>
