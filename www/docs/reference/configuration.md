@@ -82,7 +82,7 @@ See [Theming](../../guides/theming/) for the full list of theme ids.
 | `components` | record | `{}` | Maps a built-in component name to your own `.astro` file. Accepted names: `Header`, `Footer`, `Sidebar`, `TableOfContents`, `Pager`, `Search`, `ThemePicker`, `Logo`, `BlogCard`, `PageTitle` |
 | `onBrokenLinks` | `ignore` / `log` / `warn` / `throw` | `"warn"` | What to do about internal links that resolve to no page. Checked against the built output when the build finishes |
 | `onBrokenAnchors` | same | `"warn"` | Same, for `#fragment` targets that no element on the destination page carries |
-| `future.myst` | boolean | `false` | Reserved: parse through a MyST AST instead of straight to HTML. Not implemented |
+| `future.myst` | boolean | `false` | Parse through a MyST AST: cross references, numbered figures, directives, roles. See [MyST syntax](../../guides/myst/) |
 | `future.execute` | boolean | `false` | Run fenced blocks marked `exec` and embed their output. See [Executable code](../../guides/executable-code/) |
 
 Unfinished subsystems ship behind `future` flags first, so a minor release can't move the ground under a site that is already published.
@@ -109,8 +109,6 @@ Page-level options live in frontmatter instead; see [Writing docs](../../guides/
 
 ## Not wired up yet
 
-One option still validates without doing anything, listed here so you can tell a no-op from a mistake:
+Nothing. Every option on this page is honoured by the renderer.
 
-- `future.myst`. Nothing reads it. It is a placeholder for the document AST that multi-format output needs, and until that exists the flag is inert.
-
-Everything else on this page is honoured by the renderer.
+Two features inside `future.myst` are partial, and the [MyST guide](../../guides/myst/) says so on the page: citations parse but have no bibliography renderer, and cross references resolve within a page rather than across pages.

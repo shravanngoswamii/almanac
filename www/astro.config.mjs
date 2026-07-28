@@ -41,6 +41,7 @@ export default defineConfig({
 							"guides/theming",
 							"guides/terminal-demos",
 							"guides/executable-code",
+							"guides/myst",
 							"guides/link-checking",
 						],
 					},
