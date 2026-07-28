@@ -2941,3 +2941,31 @@ html[data-mode="dark"] .logo-image-dark {
 .variant-field:hover {
 	border-color: var(--accent-strong);
 }
+
+.exec-artifact {
+	display: block;
+	max-width: 100%;
+	margin: 0;
+	padding: 0.75rem;
+	border-top: 1px solid var(--line);
+	background: var(--surface);
+}
+
+img.exec-artifact {
+	height: auto;
+	object-fit: contain;
+}
+
+.exec-artifact-svg svg {
+	max-width: 100%;
+	height: auto;
+}
+
+.exec-artifact-json code,
+pre.exec-artifact code {
+	font-size: 0.82rem;
+}
+
+.exec-artifact-html :last-child {
+	margin-bottom: 0;
+}
