@@ -2795,3 +2795,50 @@ pre {
 .docs-shell.splash .docs-content {
 	max-width: none;
 }
+
+.logo-image {
+	width: auto;
+	object-fit: contain;
+}
+
+.logo-image-dark {
+	display: none;
+}
+
+html[data-mode="dark"] .logo-image-light {
+	display: none;
+}
+
+html[data-mode="dark"] .logo-image-dark {
+	display: block;
+}
+
+.social-links {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+}
+
+.social-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.9rem;
+	height: 1.9rem;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	color: var(--muted);
+	transition:
+		color 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.social-link:hover {
+	color: var(--accent-strong);
+	border-color: var(--accent-strong);
+}
+
+.social-link svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}

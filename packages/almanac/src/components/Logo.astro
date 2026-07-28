@@ -1,13 +1,39 @@
 ---
-import { siteConfig } from "../config";
+import { config, siteConfig } from "../config";
 import { logoMark } from "../assets/logoMark";
+import { withBase } from "../lib/paths";
 
 interface Props {
 	class?: string;
 }
 
 const className = Astro.props.class ?? "logo-mark";
+
+// A configured image replaces the built-in mark. Two sources means one per
+// mode, and CSS decides which is visible so there is no flash on load.
+const custom = config.logo;
+const alt = custom?.alt ?? siteConfig.name;
 ---
+
+{custom ? (
+	<Fragment>
+		{custom.light && (
+			<img
+				class:list={[className, "logo-image", { "logo-image-light": custom.dark }]}
+				src={withBase(custom.light)}
+				alt={alt}
+			/>
+		)}
+		{custom.dark && (
+			<img
+				class:list={[className, "logo-image", { "logo-image-dark": custom.light }]}
+				src={withBase(custom.dark)}
+				alt={custom.light ? "" : alt}
+				aria-hidden={custom.light ? "true" : undefined}
+			/>
+		)}
+	</Fragment>
+) : (
 
 <svg class={className} viewBox={logoMark.viewBox} role="img" aria-label={siteConfig.name}>
 	<path
@@ -40,3 +66,4 @@ const className = Astro.props.class ?? "logo-mark";
 	/>
 	<circle cx={logoMark.dot.cx} cy={logoMark.dot.cy} r={logoMark.dot.r} fill="var(--logo-warn)" />
 </svg>
+)}
