@@ -13,6 +13,7 @@ export const OVERRIDABLE = [
 	"PromptCast",
 	"Search",
 	"ShareLinks",
+	"SocialLinks",
 	"TableOfContents",
 ] as const;
 

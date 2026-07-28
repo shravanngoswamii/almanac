@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import "../styles/global.css";
 import { siteConfig, config } from "../config";
 import { buildSidebar, docHref, flattenNav } from "../utils/sidebar";
-import { Logo, Search } from "virtual:almanac/components";
+import { Logo, Search, SocialLinks } from "virtual:almanac/components";
 import GitHubIcon from "../components/icons/GitHubIcon.astro";
 import HeartIcon from "../components/icons/HeartIcon.astro";
 import { withBase } from "../lib/paths";
@@ -303,6 +303,7 @@ const renderHeadTag = (tag: {
 						<GitHubIcon />
 						GitHub
 					</a>
+					<SocialLinks />
 				</div>
 				<p class="footer-meta">
 					&copy; {new Date().getFullYear()}{' '}
