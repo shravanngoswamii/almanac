@@ -645,14 +645,14 @@ html[data-mode="dark"][data-theme="catppuccin-dark"] {
 <h2 id="beyond-the-web-page">Beyond the web page</h2>
 <p>These are built and off by default, because each one is a bigger commitment than rendering Markdown:</p>
 <ul>
-<li><strong><a href="guides/executable-code/">Executable code blocks</a>.</strong> Run JavaScript, TypeScript, and Python during the build and embed the real output, cached on the code, the language, and the runtime version. Behind <code>future.execute</code>.</li>
+<li><strong><a href="guides/executable-code/">Executable code blocks</a>.</strong> Run JavaScript, TypeScript, Python, and R during the build and embed the real output, cached on the code, the language, and the runtime version. Behind <code>future.execute</code>.</li>
 <li><strong><a href="guides/myst/">MyST parsing</a>.</strong> Cross references that write their own text, numbered figures, directives, and roles. Behind <code>future.myst</code>.</li>
 <li><strong><a href="guides/pdf/">PDF output</a>.</strong> Every docs page typeset by Typst from the same tree the web page came from, executed output included. Behind <code>future.pdf</code>.</li>
 <li><strong><a href="guides/versions-and-locales/">Versions and translations</a>.</strong> Both inherit unchanged pages instead of copying them, and build in a single pass.</li>
 </ul>
 <h2 id="what-is-still-missing">What is still missing</h2>
 <ul>
-<li><strong>R and Jupyter kernels.</strong> Only JavaScript, TypeScript, and Python execute. A language without a runner renders as ordinary highlighted code.</li>
+<li><strong>Jupyter kernels.</strong> Connecting to a running kernel is a different execution model from spawning a runtime locally, and is not built. A language without a runner renders as ordinary highlighted code.</li>
 <li><strong>Rich execution output.</strong> Text only, though the artifact type already allows images, SVG, HTML, and JSON.</li>
 <li><strong>Citations and bibliographies.</strong> <code>{cite}</code> parses but there is no bibliography renderer.</li>
 <li><strong>PDF templates.</strong> The typeset output is not yet configurable.</li>
